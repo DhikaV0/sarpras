@@ -1,9 +1,8 @@
-<!-- resources/views/Crud/category_crud.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CRUD Kategori</title>
+    <title>Kategori</title>
     <style>
         body {
             margin: 0;
@@ -12,24 +11,52 @@
             color: #333;
         }
 
+        .img {
+            width: 70px;
+            height: 70px;
+            margin-right: 20px;
+        }
+
         .navbar {
             background-color: #1e3a8a;
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .left-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .navbar .left-content a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
             color: white;
         }
 
-        .navbar a, .navbar button {
+        .navbar a,
+        .navbar button {
             color: white;
             text-decoration: none;
             font-weight: bold;
-            font-size: 16px;
-            margin-left: 20px;
+            font-size: 18px;
             background: none;
             border: none;
             cursor: pointer;
+            margin-left: 20px;
+        }
+
+        .right-buttons {
+            display: flex;
+            align-items: center;
         }
 
         .container {
@@ -41,11 +68,13 @@
             border-collapse: collapse;
             background: white;
             color: black;
+            margin-top: 20px;
         }
 
         th, td {
             padding: 12px;
             border: 1px solid #ccc;
+            text-align: center;
         }
 
         form {
@@ -63,19 +92,32 @@
             background-color: #1e3a8a;
             color: white;
             border: none;
+            cursor: pointer;
         }
 
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="navbar">
-        <div>
-            <a href="{{ route('home') }}">Home</a>
+        <div class="left-content">
+            <a href="{{ route('home') }}">
+            <img class="img" src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="Logo">
+            <h1>Sarpras</h1>
+            </a>
         </div>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit">Logout</button>
-        </form>
+        <div class="right-buttons">
+            <form method="GET" action="{{ route('crud') }}">
+                <button type="submit">Back</button>
+            </form>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit">Logout</button>
+            </form>
+        </div>
     </div>
 
     <div class="container">
@@ -83,44 +125,54 @@
 
         <form method="POST" action="{{ route('category.store') }}">
             @csrf
-            <input type="text" name="name" placeholder="Nama kategori" required>
+            <input type="text" name="name" placeholder="Nama kategori baru" required>
             <button type="submit">Tambah</button>
         </form>
 
         @if(session('success'))
-            <p style="color: green;">{{ session('success') }}</p>
+            <div class="success-message">{{ session('success') }}</div>
         @endif
 
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Nama Kategori</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($categories as $i => $category)
+        @if($categories->count() > 0)
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ $i + 1 }}</td>
-                        <td>{{ $category->name }}</td>
-                        <td>
-                            <form method="POST" action="{{ route('category.update', $category->id) }}" style="display:inline;">
-                                @csrf
-                                <input type="text" name="name" value="{{ $category->name }}" required>
-                                <button type="submit">Edit</button>
-                            </form>
-
-                            <form method="POST" action="{{ route('category.delete', $category->id) }}" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button onclick="return confirm('Yakin hapus?')" type="submit">Hapus</button>
-                            </form>
-                        </td>
+                        <th>#</th>
+                        <th>Nama Kategori</th>
+                        <th>Ubah Nama</th>
+                        <th>Aksi</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($categories as $i => $category)
+                        <tr>
+                            <td>{{ $i + 1 }}</td>
+                            <td>{{ $category->name }}</td>
+
+                            <td>
+                                <form method="POST" action="{{ route('category.update', $category->id) }}" style="display: flex; align-items: center; justify-content: center;">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="text" name="name" value="{{ $category->name }}" required style="width: 150px;">
+                                    <button type="submit">Ubah</button>
+                                </form>
+                            </td>
+
+                            <td>
+                                <form method="POST" action="{{ route('category.delete', $category->id) }}" onsubmit="return confirm('Yakin ingin menghapus kategori ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" style="background-color: #dc2626;">Hapus</button>
+                                </form>
+                            </td>
+
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <p>Tidak ada kategori yang tersedia.</p>
+        @endif
     </div>
 </body>
 </html>

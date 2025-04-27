@@ -56,9 +56,9 @@ class AuthCrudController extends Controller
         return redirect()->route('login');
     }
 
-        public function showCategoryCrud() {
+    public function showCategoryCrud() {
         $categories = Category::all();
-        return view('Crud.category_crud');
+        return view('Crud.category_crud', compact('categories'));
     }
 
     public function storeCategory(Request $request) {
@@ -70,25 +70,26 @@ class AuthCrudController extends Controller
         'name' => $request->name,
     ]);
 
-    return redirect()->route('category.index')->with('success', 'Kategori berhasil ditambahkan.');
+        return redirect()->route('category')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
-        public function updateCategory(Request $request, $id) {
+    public function updateCategory(Request $request, $id)
+    {
         $request->validate([
-            'name' => 'required|unique:categories,name,' . $id,
+        'name' => 'required|unique:categories,name,' . $id,
     ]);
 
-    $category = Category::findOrFail($id);
-    $category->name = $request->name;
-    $category->save();
+    Category::where('id', $id)->update([
+        'name' => $request->name,
+    ]);
 
-    return redirect()->route('category.index')->with('success', 'Kategori berhasil diperbarui.');
-}
+        return redirect()->route('category')->with('success', 'Kategori berhasil diperbarui.');
+    }
 
-public function deleteCategory($id) {
-    $category = Category::findOrFail($id);
-    $category->delete();
+    public function deleteCategory($id) {
+        $category = Category::findOrFail($id);
+        $category->delete();
 
-    return redirect()->route('category.index')->with('success', 'Kategori berhasil dihapus.');
+        return redirect()->route('category')->with('success', 'Kategori berhasil dihapus.');
 }
 }
