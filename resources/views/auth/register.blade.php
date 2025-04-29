@@ -16,7 +16,7 @@
 
         .img-header {
             position: absolute;
-            top: 65px;
+            top: 25px;
             left: 50%;
             transform: translateX(-50%);
             width: 200px;

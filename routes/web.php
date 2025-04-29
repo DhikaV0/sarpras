@@ -32,11 +32,18 @@ Route::post('/register', [AuthCrudController::class, 'register'])->name('registe
 Route::get('/login', [AuthCrudController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthCrudController::class, 'login'])->name('login.submit');
 
-// CATEGORY CRUD ROUTES
-Route::get('/category', [AuthCrudController::class, 'showCategoryCrud'])->name('category');
-Route::post('/category', [AuthCrudController::class, 'storeCategory'])->name('category.store');
-Route::put('/category/{id}', [AuthCrudController::class, 'updateCategory'])->name('category.update');
-Route::delete('/category/{id}', [AuthCrudController::class, 'deleteCategory'])->name('category.delete');
+// CRUD
+Route::get('/crud', [AuthCrudController::class,'showCrudPage'])->name('crud');
+
+// CRUD CATEGORY
+Route::post('/category', [AuthCrudController::class,'storeCategory'])->name('category.store');
+Route::put('/category/{id}', [AuthCrudController::class,'updateCategory'])->name('category.update');
+Route::delete('/category/{id}',[AuthCrudController::class,'deleteCategory'])->name('category.delete');
+
+// CRUD ITEM
+Route::post('/item', [AuthCrudController::class,'storeItem'])->name('item.store');
+Route::put('/item/{id}', [AuthCrudController::class,'updateItem'])->name('item.update');
+Route::delete('/item/{id}',[AuthCrudController::class,'deleteItem'])->name('item.delete');
 
 // LOGOUT ROUTE
 Route::post('/logout', [AuthCrudController::class, 'logout'])->name('logout');

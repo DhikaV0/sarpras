@@ -7,19 +7,23 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use illuminate\support\Facades\Storage;
 use App\Models\Category;
-
+use App\Models\Item;
 
 class AuthCrudController extends Controller
 {
-    public function showRegisterForm() {
+    // ===== Authentication =====
+    public function showRegisterForm()
+    {
         return view('auth.register');
     }
 
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'username' => 'required|unique:users',
-            'email' => 'required|email|unique:users',
+            'email'    => 'required|email|unique:users',
             'password' => 'required|confirmed|min:5',
         ]);
 
@@ -29,7 +33,7 @@ class AuthCrudController extends Controller
 
         $user = User::create([
             'username' => $request->username,
-            'email' => $request->email,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
@@ -37,59 +41,125 @@ class AuthCrudController extends Controller
         return redirect()->route('home');
     }
 
-    public function showLoginForm() {
+    public function showLoginForm()
+    {
         return view('auth.login');
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $credentials = $request->only('username', 'password');
 
         if (Auth::attempt($credentials)) {
             return redirect()->route('home');
         }
 
-        return back()->withErrors(['username' => 'Invalid credentials'])->withInput();
+        return back()->withErrors(['login' => 'Username atau password salah'])->withInput();
     }
 
-    public function logout() {
+    public function logout(Request $request)
+    {
         Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect()->route('login');
     }
 
-    public function showCategoryCrud() {
+    // ===== Combined CRUD Page =====
+    public function showCrudPage()
+    {
         $categories = Category::all();
-        return view('Crud.category_crud', compact('categories'));
+        $items      = Item::with('category')->get();
+
+        return view('Crud.crud', compact('categories', 'items'));
     }
 
-    public function storeCategory(Request $request) {
-    $request->validate([
-        'name' => 'required|unique:categories,name',
-    ]);
+    // ===== Category CRUD =====
+    public function storeCategory(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|unique:categories,name',
+        ]);
 
-    Category::create([
-        'name' => $request->name,
-    ]);
+        Category::create(['name' => $request->name]);
 
-        return redirect()->route('category')->with('success', 'Kategori berhasil ditambahkan.');
+        return redirect()->route('crud')->with('success_category', 'Kategori berhasil ditambahkan.');
     }
 
     public function updateCategory(Request $request, $id)
     {
         $request->validate([
-        'name' => 'required|unique:categories,name,' . $id,
-    ]);
+            'name' => 'required|unique:categories,name,' . $id,
+        ]);
 
-    Category::where('id', $id)->update([
-        'name' => $request->name,
-    ]);
+        Category::where('id', $id)->update(['name' => $request->name]);
 
-        return redirect()->route('category')->with('success', 'Kategori berhasil diperbarui.');
+        return redirect()->route('crud')->with('success_category', 'Kategori berhasil diperbarui.');
     }
 
-    public function deleteCategory($id) {
-        $category = Category::findOrFail($id);
-        $category->delete();
+    public function deleteCategory($id)
+    {
+        $categories  = Category::find($id)->delete();
 
-        return redirect()->route('category')->with('success', 'Kategori berhasil dihapus.');
+        return redirect()->route('crud')->with('success_category', 'Kategori berhasil dihapus.');
+    }
+
+    // Item CRUD
+    public function storeItem(Request $request)
+    {
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'stok'        => 'required|integer|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'deskripsi'   => 'nullable|string',
+            'foto'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $data = $request->only('name', 'stok', 'category_id', 'deskripsi');
+
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('foto_items', 'public');
+        }
+
+        Item::create($data);
+
+        return redirect()->route('crud')->with('success_item', 'Item berhasil ditambahkan.');
+    }
+
+    public function updateItem(Request $request, $id)
+    {
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'stok'        => 'required|integer|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'deskripsi'   => 'nullable|string',
+            'foto'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $item = Item::find($id);
+        $data = $request->only('name', 'stok', 'category_id', 'deskripsi');
+
+        if ($request->hasFile('foto')) {
+            if ($item->foto) {
+                Storage::disk('public')->delete($item->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('img-item', 'public');
+        }
+
+        $item->update($data);
+
+        return redirect()->route('crud')->with('success_item', 'Item berhasil diperbarui.');
+    }
+
+    public function deleteItem($id)
+    {
+        $item = Item::find($id);
+        if ($item->foto) {
+            Storage::disk('public')->delete($item->foto);
+        }
+        $item->delete();
+
+        return redirect()->route('crud')->with('success_item', 'Item berhasil dihapus.');
+    }
 }
-}
+

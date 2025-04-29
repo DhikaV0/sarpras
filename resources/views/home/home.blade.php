@@ -2,82 +2,57 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Dashboard Home</title>
+        <title>Home</title>
         <style>
-            body {
-                margin: 0;
-                font-family: Arial, sans-serif;
-                background-color: #bbddff;
-                color: white;
-            }
-
-            .img {
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #bbddff;
+            color: white;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 220px;
+            background: #1e3a8a;
+            padding-top: 20px;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            display: block;
+            transition: background 0.3s;
+        }
+        .img {
             width: 70px;
             height: 70px;
             margin-right: 20px;
         }
-
-        .navbar {
-            background-color: #1e3a8a;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .sidebar a:hover {
+            background: #2563eb;
         }
-
-        .left-content {
-            display: flex;
-            align-items: center;
-        }
-
-        .right-content {
-            display: flex;
-            align-items: center;
-        }
-
-        .navbar h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        .navbar .left-content a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
+        .sidebar h1 {
             color: white;
-        }
-
-        .navbar a,
-        .navbar button {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 18px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            margin-left: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 22px;
         }
         </style>
     </head>
     <body>
-        <div class="navbar">
-            <div class="left-content">
-                <a href="{{ route('home') }}">
-                <img class="img" src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
-                <h1>Sarpras</h1>
-                </a>
-            </div>
-            <div class="right-content">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button style="font-size: 20px" type="submit">Logout</button>
-                </form>
-                <form method="GET" action="{{ route('crud') }}">
-                    @csrf
-                    <button style="font-size: 20px" type="submit">Create</button>
-                </form>
-            </div>
+        <div class="sidebar">
+            <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
+            <h1>SARPRAS</h1>
+            <a href="{{ route('crud') }}">Create</a>
+            <a href="{{ route('logout') }}">Logout</a>
         </div>
     </body>
 </html>

@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->integer('stok');
+            $table->unsignedBigInteger('category_id');
+            $table->text('deskripsi')->nullable();
+            $table->string('foto')->nullable();
             $table->timestamps();
+
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 
