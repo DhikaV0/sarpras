@@ -10,6 +10,19 @@
             background-color: #bbddff;
             color: white;
         }
+        .nav {
+            background-color: #1e3a8a;
+            padding: 30px;
+            text-align: center;;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 1500px;
+            padding: 15px 20px;
+        }
         .sidebar {
             position: fixed;
             top: 0;
@@ -48,11 +61,13 @@
         </style>
     </head>
     <body>
+        <div class="nav">
+            <a href="{{ route('logout') }}">Logout</a>
+        </div>
         <div class="sidebar">
             <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
             <h1>SARPRAS</h1>
             <a href="{{ route('crud') }}">Create</a>
-            <a href="{{ route('logout') }}">Logout</a>
         </div>
     </body>
 </html>

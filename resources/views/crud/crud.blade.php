@@ -8,7 +8,23 @@
         font-family: Arial, sans-serif;
         background: #bbddff;
         margin: 0;
-        padding: 20px;
+    }
+    .nav {
+        background-color: #1e3a8a;
+        padding: 30px;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        margin-bottom: 50px;
+    }
+    .nav a {
+        color: white;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: bold;
+        margin-left: 1500px;
+        padding: 15px 20px;
     }
     .sidebar {
         position: fixed;
@@ -59,8 +75,8 @@
     .card {
         background: white;
         padding: 20px;
+        margin-bottom: 20px;
         border-radius: 12px;
-        margin-bottom: 30px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     h2 {
@@ -157,12 +173,13 @@
   </style>
 </head>
 <body>
-
+<div class="nav">
+    <a href="{{ route('logout') }}">Logout</a>
+</div>
 <div class="sidebar">
     <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
     <h1>SARPRAS</h1>
     <a href="{{ route('home') }}">Dashboard</a>
-    <a href="{{ route('logout') }}">Logout</a>
 </div>
 
 <div class="container">
