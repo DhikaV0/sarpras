@@ -11,9 +11,9 @@ use illuminate\support\Facades\Storage;
 use App\Models\Category;
 use App\Models\Item;
 
-class AuthCrudController extends Controller
+class MainController extends Controller
 {
-    // ===== Authentication =====
+    // AUTH
     public function showRegisterForm()
     {
         return view('auth.register');
@@ -53,8 +53,9 @@ class AuthCrudController extends Controller
         if (Auth::attempt($credentials)) {
             return redirect()->route('home');
         }
-
-        return back()->withErrors(['login' => 'Username atau password salah'])->withInput();
+        else {
+            return back()->withErrors(['login' => 'Username atau password salah'])->withInput();
+        }
     }
 
     public function logout(Request $request)
@@ -65,16 +66,23 @@ class AuthCrudController extends Controller
         return redirect()->route('login');
     }
 
-    // ===== Combined CRUD Page =====
+    // USERS
+    public function showUsers()
+    {
+        $users = User::all();
+        return view('pages.users', compact('users'));
+    }
+
+    // CRUD
     public function showCrudPage()
     {
         $categories = Category::all();
         $items      = Item::with('category')->get();
 
-        return view('Crud.crud', compact('categories', 'items'));
+        return view('pages.crud', compact('categories', 'items'));
     }
 
-    // ===== Category CRUD =====
+    // CATEGORY CRUD
     public function storeCategory(Request $request)
     {
         $request->validate([
@@ -104,7 +112,7 @@ class AuthCrudController extends Controller
         return redirect()->route('crud')->with('success_category', 'Kategori berhasil dihapus.');
     }
 
-    // Item CRUD
+    // ITEM CRUD
     public function storeItem(Request $request)
     {
         $request->validate([

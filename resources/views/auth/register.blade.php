@@ -13,6 +13,7 @@
             justify-content: center;
             align-items: center;
         }
+
         .img-header {
             position: absolute;
             top: 25px;
@@ -21,6 +22,7 @@
             width: 200px;
             height: 200px;
         }
+
         .container {
             background-color: #1e3a8a;
             padding: 50px;
@@ -29,15 +31,18 @@
             color: white;
             width: 400px;
         }
+
         .container h2 {
             text-align: center;
             margin-bottom: 25px;
             font-size: 20px;
         }
+
         .form-group {
             margin-bottom: 20px;
             position: relative;
         }
+
         .form-group input {
             width: 82%;
             padding: 10px 35px 10px 35px;
@@ -46,11 +51,13 @@
             background-color: #ffffff;
             color: rgb(13, 0, 0);
         }
+
         .underform-text {
             text-align: center;
             margin-top: 20px;
             font-size: 14px;
         }
+
         .form-group .icon {
             position: absolute;
             left: 10px;
@@ -58,8 +65,9 @@
             width: 16px;
             height: 16px;
         }
+
         .container button {
-            width: 100%;
+             width: 100%;
             background-color: #3b82f6;
             border: none;
             padding: 10px;
@@ -68,6 +76,7 @@
             font-weight: bold;
             cursor: pointer;
         }
+        
         .container button:hover {
             background-color: #2563eb;
         }
