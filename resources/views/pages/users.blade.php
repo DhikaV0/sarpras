@@ -11,7 +11,7 @@
         }
 
         .nav {
-            background-color: #053dd8;
+            background-color: #002793;
             padding: 30px;
             text-align: center;
             position: sticky;
@@ -56,16 +56,24 @@
             background: #2563eb;
         }
 
+        .sidebar img {
+            width: 100px;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+        }
+
         .sidebar h1 {
             color: white;
             text-align: center;
             margin-bottom: 30px;
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .main-content {
             margin-left: 250px;
             padding: 30px;
+            max-width: 1200px;
         }
 
         .card {
@@ -167,8 +175,9 @@
     <div class="sidebar">
         <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
         <h1>SARPRAS</h1>
-        <a href="{{ route('crud') }}">Create</a>
         <a href="{{ route('home') }}">Home</a>
+        <a href="{{ route('users') }}">Users</a>
+        <a href="{{ route('crud') }}">Create</a>
     </div>
 
     <div class="main-content">
@@ -197,26 +206,29 @@
                     </tbody>
                 </table>
             </div>
-            <button class="action-btn" onclick="openModal()">Tambah User</button>
-                <div id="popupModal" class="modal" style="display: none;">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeModal()">&times;</span>
-                        <h2>Tambah Pengguna</h2>
-                        <form action="#" method="POST">
-                            @csrf
-                            <label>Username</label><br>
-                            <input type="text" name="username" required><br><br>
-                            <label>Email</label><br>
-                            <input type="email" name="email" required><br><br>
-                            <label>Password</label><br>
-                            <input type="password" name="password" required><br><br>
-                            <button type="submit" class="action-btn" style="background: #1e3a8a; color: white;">Simpan</button>
-                        </form>
-                    </div>
+            <button onclick="document.getElementById('addUserModal').style.display='flex'" class="action-btn">Tambah User</button>
+            <div id="addUserModal" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <span class="close" onclick="document.getElementById('addUserModal').style.display='none'">&times;</span>
+                    <h3>Tambah User Baru</h3>
+                    <form action="{{ route('users.store') }}" method="POST">
+                        @csrf
+                        <input type="text" name="username" placeholder="Username" required><br><br>
+                        <input type="email" name="email" placeholder="Email" required><br><br>
+                        <input type="password" name="password" placeholder="Password" required><br><br>
+                        <button type="submit" class="action-btn">Simpan</button>
+                    </form>
                 </div>
+            </div>
+        @if(session('success'))
+            <div style="margin: 15px 0; background: #d4edda; color: #155724; padding: 10px; border-radius: 8px;">
+                {{ session('success') }}
+            </div>
+        @endif
         </div>
     </div>
     <script>
+
         function openModal() {
             document.getElementById("popupModal").style.display = "flex";
         }

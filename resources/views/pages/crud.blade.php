@@ -11,7 +11,7 @@
     }
 
     .nav {
-        background-color: #053dd8;
+        background-color: #002793;
         padding: 30px;
         text-align: center;
         position: sticky;
@@ -52,12 +52,6 @@
         transition: background 0.3s;
     }
 
-    .img {
-        width: 70px;
-        height: 70px;
-        margin-right: 20px;
-    }
-
     .sidebar a:hover {
         background: #2563eb;
     }
@@ -66,20 +60,20 @@
         color: white;
         text-align: center;
         margin-bottom: 30px;
-        font-size: 22px;
+        font-size: 20px;
+    }
+
+    .sidebar img {
+        width: 100px;
+        height: auto;
+        margin: 0 auto;
+        display: block;
     }
 
     .main-content {
-        margin-left: 240px;
-        padding: 20px;
-    }
-
-    .container {
-        width: 100%;
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 0 1rem;
-        box-sizing: border-box;
+        margin-left: 250px;
+        padding: 30px;
+        max-width: 1200px;
     }
 
     .card {
@@ -95,7 +89,7 @@
     }
 
     .table-wrap {
-       overflow-x: auto;
+        overflow-x: auto;
     }
 
     table {
@@ -214,14 +208,15 @@
         </form>
         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
     </div>
-<div class="sidebar">
-    <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
-    <h1>SARPRAS</h1>
-    <a href="{{ route('home') }}">Dashboard</a>
-    <a href="{{ route('users') }}">Users</a>
-</div>
+    <div class="sidebar">
+        <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
+        <h1>SARPRAS</h1>
+        <a href="{{ route('home') }}">Home</a>
+        <a href="{{ route('users') }}">Users</a>
+        <a href="{{ route('crud') }}">Create</a>
+    </div>
 
-<div class="container">
+<div class="main-content">
     <div class="card">
         <h2>Daftar Kategori</h2>
         <button class="open-modal-btn" data-modal="addCategoryModal">Tambah Kategori</button>

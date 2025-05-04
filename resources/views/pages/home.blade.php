@@ -12,9 +12,13 @@
         }
 
         .nav {
-            background-color: #053dd8;
+            background-color: #002793;
             padding: 30px;
-            text-align: center;;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            margin-bottom: 50px;
         }
 
         .nav a {
@@ -49,20 +53,70 @@
             transition: background 0.3s;
         }
 
-        .img {
-            width: 70px;
-            height: 70px;
-            margin-right: 20px;
-        }
-
         .sidebar a:hover {
             background: #2563eb;
         }
+
         .sidebar h1 {
             color: white;
             text-align: center;
             margin-bottom: 30px;
-            font-size: 22px;
+            font-size: 20px;
+        }
+
+        .sidebar img {
+            width: 100px;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin: 10px;
+            color: black;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px 15px;
+            text-align: left;
+        }
+
+        tbody {
+            color: black
+        }
+
+        th {
+            background: #1e3a8a;
+            color: white;
         }
         </style>
     </head>
@@ -73,11 +127,61 @@
             </form>
             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
         </div>
+
         <div class="sidebar">
-            <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
+            <img class="img" src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
             <h1>SARPRAS</h1>
-            <a href="{{ route('crud') }}">Create</a>
+            <a href="{{ route('home') }}">Home</a>
             <a href="{{ route('users') }}">Users</a>
+            <a href="{{ route('crud') }}">Create</a>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>Daftar Barang</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>No</th><th>Nama</th><th>Stok</th><th>Kategori</th></tr>
+                        </thead>
+                        <tbody>
+                            @forelse($items as $i => $it)
+                                <tr>
+                                    <td>{{ $i+1 }}</td>
+                                    <td>{{ $it->name }}</td>
+                                    <td>{{ $it->stok }}</td>
+                                    <td>{{ $it->category->name ?? '-' }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4">Belum ada data barang</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Daftar User</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>No</th><th>Username</th><th>Email</th><th>Terdaftar</th></tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($users as $i => $user)
+                                <tr>
+                                    <td>{{ $i + 1 }}</td>
+                                    <td>{{ $user->username }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>{{ $user->created_at->format('d M Y') }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="4">Belum ada user terdaftar</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </body>
 </html>

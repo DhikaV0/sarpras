@@ -13,45 +13,40 @@ use App\Http\Controllers\MainController;
 */
 
 Route::get('/', function () {
-    return redirect()->route('register');
+    return redirect()->route('auth.register');
 });
 
-Route::get('/home', function () {
-    return view('pages.home');
-})->name('home');
+// AUTH ROUTES (GUEST ONLY)
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [MainController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [MainController::class, 'register'])->name('register.submit');
+    Route::get('/login', [MainController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [MainController::class, 'login'])->name('login.submit');
+});
 
-Route::get('/crud', function () {
-    return view('pages.crud');
-})->name('crud');
+// PROTECTED ROUTES (AUTH REQUIRED)
+Route::middleware('auth')->group(function () {
 
-Route::get('/user', function () {
-    return view('pages.users');
-})->name('users');
+    // Home
+    Route::get('/home', [MainController::class, 'showHome'])->name('home');
 
-// REGISTER ROUTES
-Route::get('/register', [MainController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [MainController::class, 'register'])->name('register.submit');
+    // Users
+    Route::get('/users', [MainController::class, 'showUsers'])->name('users');
+    Route::post('/users', [MainController::class, 'storeUser'])->name('users.store');
 
-// LOGIN ROUTES
-Route::get('/login', [MainController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [MainController::class, 'login'])->name('login.submit');
+    // CRUD
+    Route::get('/crud', [MainController::class, 'showCrudPage'])->name('crud');
 
-// USERS
-Route::get('/users', [MainController::class, 'showUsers'])->name('users');
+    // Categories
+    Route::post('/category', [MainController::class, 'storeCategory'])->name('category.store');
+    Route::put('/category/{id}', [MainController::class, 'updateCategory'])->name('category.update');
+    Route::delete('/category/{id}', [MainController::class, 'deleteCategory'])->name('category.delete');
 
-// CRUD
-Route::get('/crud', [MainController::class,'showCrudPage'])->name('crud');
+    // Items
+    Route::post('/item', [MainController::class, 'storeItem'])->name('item.store');
+    Route::put('/item/{id}', [MainController::class, 'updateItem'])->name('item.update');
+    Route::delete('/item/{id}', [MainController::class, 'deleteItem'])->name('item.delete');
 
-// CRUD CATEGORY
-Route::post('/category', [MainController::class,'storeCategory'])->name('category.store');
-Route::put('/category/{id}', [MainController::class,'updateCategory'])->name('category.update');
-Route::delete('/category/{id}',[MainController::class,'deleteCategory'])->name('category.delete');
-
-// CRUD ITEM
-Route::post('/item', [MainController::class,'storeItem'])->name('item.store');
-Route::put('/item/{id}', [MainController::class,'updateItem'])->name('item.update');
-Route::delete('/item/{id}',[MainController::class,'deleteItem'])->name('item.delete');
-
-// LOGOUT ROUTE
-Route::post('/logout', [MainController::class, 'logout'])->name('logout');
-
+    // Logout
+    Route::post('/logout', [MainController::class, 'logout'])->name('logout');
+});

@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use illuminate\support\Facades\Storage;
+use Illuminate\support\Facades\Storage;
 use App\Models\Category;
 use App\Models\Item;
 
@@ -66,12 +66,40 @@ class MainController extends Controller
         return redirect()->route('login');
     }
 
+    // HOME
+    public function showHome()
+    {
+        $users = User::all();
+        $categories = Category::all();
+        $items = Item::with('category')->get();
+
+        return view('pages.home', compact('users', 'categories', 'items'));
+    }
+
     // USERS
     public function showUsers()
     {
         $users = User::all();
         return view('pages.users', compact('users'));
     }
+
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|unique:users',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:5',
+        ]);
+
+        User::create([
+            'username' => $request->username,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('users')->with('success', 'User berhasil ditambahkan.');
+    }
+
 
     // CRUD
     public function showCrudPage()
@@ -83,6 +111,12 @@ class MainController extends Controller
     }
 
     // CATEGORY CRUD
+    public function showCategories()
+    {
+        $categories = Category::all();
+        return view('pages.crud', compact('categories'));
+    }
+
     public function storeCategory(Request $request)
     {
         $request->validate([
@@ -113,6 +147,12 @@ class MainController extends Controller
     }
 
     // ITEM CRUD
+    public function showItems()
+    {
+        $items = Item::with('category')->get();
+        return view('pages.crud', compact('items'));
+    }
+
     public function storeItem(Request $request)
     {
         $request->validate([
