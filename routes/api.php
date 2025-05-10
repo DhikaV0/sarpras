@@ -15,22 +15,29 @@ use App\Http\Controllers\Api\MainApiController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 // USER API
 Route::post('/register', [MainApiController::class, 'register']);
 Route::post('/login', [MainApiController::class, 'login']);
+Route::post('/logout', [MainApiController::class, 'logout']);
 
-// CATEGORY API
-Route::get('/categories', [MainApiController::class, 'getCategories']);
-Route::post('/categories', [MainApiController::class, 'createCategory']);
-Route::put('/categories/{id}', [MainApiController::class, 'updateCategory']);
-Route::delete('/categories/{id}', [MainApiController::class, 'deleteCategory']);
+Route::middleware('auth:sanctum')->group(function () {
+    // AUTH
+    Route::post('/logout', [MainApiController::class, 'logout']);
 
-// ITEM API
-Route::get('/items', [MainApiController::class, 'getItems']);
-Route::post('/items', [MainApiController::class, 'createItem']);
-Route::put('/items/{id}', [MainApiController::class, 'updateItem']);
-Route::delete('/items/{id}', [MainApiController::class, 'deleteItem']);
+    // CATEGORY
+    Route::get('/categories', [MainApiController::class, 'getCategories']);
+    Route::post('/categories', [MainApiController::class, 'createCategory']);
+    Route::put('/categories/{id}', [MainApiController::class, 'updateCategory']);
+    Route::delete('/categories/{id}', [MainApiController::class, 'deleteCategory']);
+
+    // ITEM
+    Route::get('/items', [MainApiController::class, 'getItems']);
+    Route::post('/items', [MainApiController::class, 'createItem']);
+    Route::put('/items/{id}', [MainApiController::class, 'updateItem']);
+    Route::delete('/items/{id}', [MainApiController::class, 'deleteItem']);
+
+    // Get current user
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+});

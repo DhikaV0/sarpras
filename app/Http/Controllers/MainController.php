@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\support\Facades\Storage;
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\Peminjaman;
 
 class MainController extends Controller
 {
@@ -100,7 +101,6 @@ class MainController extends Controller
         return redirect()->route('users')->with('success', 'User berhasil ditambahkan.');
     }
 
-
     // CRUD
     public function showCrudPage()
     {
@@ -185,18 +185,18 @@ class MainController extends Controller
         ]);
 
         $item = Item::find($id);
-        $data = $request->only('name', 'stok', 'category_id', 'deskripsi');
+    $data = $request->only('name', 'stok', 'category_id', 'deskripsi');
 
-        if ($request->hasFile('foto')) {
-            if ($item->foto) {
-                Storage::disk('public')->delete($item->foto);
-            }
-            $data['foto'] = $request->file('foto')->store('img-item', 'public');
+    if ($request->hasFile('foto')) {
+        if ($item->foto) {
+            Storage::disk('public')->delete($item->foto);
         }
+        $data['foto'] = $request->file('foto')->store('foto_items', 'public');
+    }
 
-        $item->update($data);
+    $item->update($data);
 
-        return redirect()->route('crud')->with('success_item', 'Item berhasil diperbarui.');
+    return redirect()->route('crud')->with('success_item', 'Item berhasil diperbarui.');
     }
 
     public function deleteItem($id)
@@ -209,5 +209,79 @@ class MainController extends Controller
 
         return redirect()->route('crud')->with('success_item', 'Item berhasil dihapus.');
     }
+
+    // PEMINJAMAN
+    public function showPeminjaman()
+    {
+        $items = Item::all();
+        $users = User::all();
+        $peminjaman = Peminjaman::with(['user', 'item'])->get();
+        return view('pages.peminjaman', compact('peminjaman', 'items', 'users'));
+    }
+
+    public function Peminjaman(Request $request)
+    {
+        $request->validate([
+            'item_id' => 'required|exists:items,id',
+            'jumlah_pinjam' => 'required|integer|min:1',
+            'tanggal_pinjam' => 'required|date',
+            'tanggal_kembali' => 'nullable|date|after_or_equal:tanggal_pinjam',
+        ]);
+
+        $item = Item::findOrFail($request->item_id);
+
+        if ($item->stok < $request->jumlah_pinjam) {
+            return back()->with('error', 'Stok tidak mencukupi.');
+        }
+
+        $item->stok -= $request->jumlah_pinjam;
+        $item->save();
+
+        Peminjaman::create([
+            'users_id' => $request->users_id,
+            'items_id' => $request->item_id,
+            'jumlah_pinjam' => $request->jumlah_pinjam,
+            'tanggal_pinjam' => $request->tanggal_pinjam,
+            'tanggal_kembali' => $request->tanggal_kembali,
+            'status' => 'pinjam',
+        ]);
+
+        return redirect()->back()->with('success', 'Peminjaman berhasil.');
+    }
+
+    public function destroy($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        $item = Item::findOrFail($peminjaman->items_id);
+        $item->stok += $peminjaman->jumlah_pinjam;
+        $item->save();
+
+        $peminjaman->delete();
+
+        return redirect()->back()->with('success', 'Data peminjaman berhasil dihapus.');
+    }
+
+    //PNGEMBALIAN
+    public function Pengembalian($id)
+    {
+    $peminjaman = Peminjaman::findOrFail($id);
+
+    if ($peminjaman->status != 'pinjam') {
+        return back()->with('error', 'Barang sudah dikembalikan.');
+    }
+
+    $item = Item::find($peminjaman->items_id);
+    $item->stok += $peminjaman->jumlah_pinjam;
+    $item->save();
+
+    $peminjaman->status = 'kembali';
+    $peminjaman->tanggal_kembali = now();
+    $peminjaman->save();
+
+    return redirect()->back()->with('success', 'Barang berhasil dikembalikan.');
+    }
+
+
 }
 

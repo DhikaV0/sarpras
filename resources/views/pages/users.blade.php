@@ -56,6 +56,10 @@
             background: #2563eb;
         }
 
+        .sidebar a.active {
+            background: #6293ff;
+        }
+
         .sidebar img {
             width: 100px;
             height: auto;
@@ -173,11 +177,12 @@
     </div>
 
     <div class="sidebar">
-        <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
+        <img class="img" src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
         <h1>SARPRAS</h1>
-        <a href="{{ route('home') }}">Home</a>
-        <a href="{{ route('users') }}">Users</a>
-        <a href="{{ route('crud') }}">Create</a>
+        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+        <a href="{{ route('users') }}" class="{{ request()->routeIs('users') ? 'active' : '' }}">Users</a>
+        <a href="{{ route('crud') }}" class="{{ request()->routeIs('crud') ? 'active' : '' }}">Create</a>
+        <a href="{{ route('peminjaman') }}" class="{{ request()->routeIs('peminjaman') ? 'active' : '' }}">Peminjaman</a>
     </div>
 
     <div class="main-content">
@@ -195,14 +200,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($users as $i => $user)
+                        @forelse ($users as $i => $user)
                             <tr>
                                 <td>{{ $i + 1 }}</td>
                                 <td>{{ $user->username }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->created_at->format('d M Y') }}</td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="4">Belum ada data pengguna</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

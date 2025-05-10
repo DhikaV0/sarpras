@@ -56,11 +56,22 @@
         background: #2563eb;
     }
 
+    .sidebar a.active {
+        background: #6293ff;
+    }
+
     .sidebar h1 {
         color: white;
         text-align: center;
         margin-bottom: 30px;
         font-size: 20px;
+    }
+
+    .item-image {
+        max-width: 50px;
+        max-height: 50px;
+        width: auto;
+        height: auto;
     }
 
     .sidebar img {
@@ -209,11 +220,12 @@
         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
     </div>
     <div class="sidebar">
-        <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
+        <img class="img" src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
         <h1>SARPRAS</h1>
-        <a href="{{ route('home') }}">Home</a>
-        <a href="{{ route('users') }}">Users</a>
-        <a href="{{ route('crud') }}">Create</a>
+        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+        <a href="{{ route('users') }}" class="{{ request()->routeIs('users') ? 'active' : '' }}">Users</a>
+        <a href="{{ route('crud') }}" class="{{ request()->routeIs('crud') ? 'active' : '' }}">Create</a>
+        <a href="{{ route('peminjaman') }}" class="{{ request()->routeIs('peminjaman') ? 'active' : '' }}">Peminjaman</a>
     </div>
 
 <div class="main-content">
@@ -231,7 +243,7 @@
                     <tr><th>No</th><th>Nama</th><th>Aksi</th></tr>
                 </thead>
                 <tbody>
-                    @foreach($categories as $i => $cat)
+                    @forelse($categories as $i => $cat)
                     <tr>
                         <td>{{ $i+1 }}</td>
                         <td>{{ $cat->name }}</td>
@@ -243,7 +255,11 @@
                             </form>
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Tidak ada kategori</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -260,14 +276,21 @@
         <div class="table-wrap">
             <table>
                 <thead>
-                    <tr><th>No</th><th>Nama</th><th>Stok</th><th>Kategori</th><th>Aksi</th></tr>
+                    <tr><th>No</th><th>Nama</th><th>Stok</th><th>Gambar</th><th>Kategori</th><th>Aksi</th></tr>
                 </thead>
                 <tbody>
-                    @foreach($items as $i => $it)
+                    @forelse($items as $i => $it)
                     <tr>
                         <td>{{ $i+1 }}</td>
                         <td>{{ $it->name }}</td>
                         <td>{{ $it->stok }}</td>
+                        <td>
+                            @if($it->foto)
+                            <img src="{{ asset('storage/' . $it->foto) }}" alt="{{ $it->name }}" class="item-image">
+                            @else
+                                Tidak ada gambar
+                            @endif
+                        </td>
                         <td>{{ $it->category->name }}</td>
                         <td>
                             <button class="action-btn btn-edit open-modal-btn" data-modal="editItemModal" data-id="{{ $it->id }}" data-name="{{ $it->name }}" data-stok="{{ $it->stok }}" data-category-id="{{ $it->category_id }}">Ubah</button>
@@ -277,7 +300,11 @@
                             </form>
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Tidak ada barang</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -287,7 +314,7 @@
         <div id="modal-content" class="modal-content">
             <span class="close-modal-btn" style="cursor: pointer;">&times;</span>
             <div id="modal-body">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -343,105 +370,106 @@
                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                 @endforeach
             </select>
+            <input type="file" name="foto" accept="image/*">
             <button type="submit">Update</button>
         </form>
     </template>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const modalContainer = document.getElementById('modal-container');
-    const modalBody = document.getElementById('modal-body');
-    const closeModalBtn = document.querySelector('.close-modal-btn');
-    const openModalButtons = document.querySelectorAll('.open-modal-btn');
-    const addCategoryModalTemplate = document.getElementById('addCategoryModalTemplate');
-    const addItemModalTemplate = document.getElementById('addItemModalTemplate');
-    const editCategoryModalTemplate = document.getElementById('editCategoryModalTemplate');
-    const editItemModalTemplate = document.getElementById('editItemModalTemplate');
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalContainer = document.getElementById('modal-container');
+        const modalBody = document.getElementById('modal-body');
+        const closeModalBtn = document.querySelector('.close-modal-btn');
+        const openModalButtons = document.querySelectorAll('.open-modal-btn');
+        const addCategoryModalTemplate = document.getElementById('addCategoryModalTemplate');
+        const addItemModalTemplate = document.getElementById('addItemModalTemplate');
+        const editCategoryModalTemplate = document.getElementById('editCategoryModalTemplate');
+        const editItemModalTemplate = document.getElementById('editItemModalTemplate');
 
-    function openModal(modalId, data = {}) {
-        let template;
-        modalBody.innerHTML = ''; // Bersihkan konten modal sebelumnya
-        modalContainer.style.display = 'flex';
+        function openModal(modalId, data = {}) {
+            let template;
+            modalBody.innerHTML = ''; // Bersihkan konten modal sebelumnya
+            modalContainer.style.display = 'flex';
 
-        switch (modalId) {
-            case 'addCategoryModal':
-                template = addCategoryModalTemplate.content.cloneNode(true);
-                modalBody.appendChild(template);
-                break;
-            case 'addItemModal':
-                template = addItemModalTemplate.content.cloneNode(true);
-                modalBody.appendChild(template);
-                break;
-            case 'editCategoryModal':
-                template = editCategoryModalTemplate.content.cloneNode(true);
-                const editCategoryForm = template.querySelector('form');
-                editCategoryForm.action = `/category/${data.id}`;
-                template.querySelector('input[name="id"]').value = data.id;
-                template.querySelector('input[name="name"]').value = data.name;
-                modalBody.appendChild(template);
-                break;
-            case 'editItemModal':
-                template = editItemModalTemplate.content.cloneNode(true);
-                const editItemForm = template.querySelector('form');
-                editItemForm.action = `/item/${data.id}`;
-                template.querySelector('input[name="id"]').value = data.id;
-                template.querySelector('input[name="name"]').value = data.name;
-                template.querySelector('input[name="stok"]').value = data.stok;
-                const categorySelect = template.querySelector('select[name="category_id"]');
-                Array.from(categorySelect.options).forEach(option => {
-                    if (parseInt(option.value) === parseInt(data.categoryId)) {
-                        option.selected = true;
-                    }
+            switch (modalId) {
+                case 'addCategoryModal':
+                    template = addCategoryModalTemplate.content.cloneNode(true);
+                    modalBody.appendChild(template);
+                    break;
+                case 'addItemModal':
+                    template = addItemModalTemplate.content.cloneNode(true);
+                    modalBody.appendChild(template);
+                    break;
+                case 'editCategoryModal':
+                    template = editCategoryModalTemplate.content.cloneNode(true);
+                    const editCategoryForm = template.querySelector('form');
+                    editCategoryForm.action = `/category/${data.id}`;
+                    template.querySelector('input[name="id"]').value = data.id;
+                    template.querySelector('input[name="name"]').value = data.name;
+                    modalBody.appendChild(template);
+                    break;
+                case 'editItemModal':
+                    template = editItemModalTemplate.content.cloneNode(true);
+                    const editItemForm = template.querySelector('form');
+                    editItemForm.action = `/item/${data.id}`;
+                    template.querySelector('input[name="id"]').value = data.id;
+                    template.querySelector('input[name="name"]').value = data.name;
+                    template.querySelector('input[name="stok"]').value = data.stok;
+                    const categorySelect = template.querySelector('select[name="category_id"]');
+                    Array.from(categorySelect.options).forEach(option => {
+                        if (parseInt(option.value) === parseInt(data.categoryId)) {
+                            option.selected = true;
+                        }
+                    });
+                    modalBody.appendChild(template);
+                    break;
+            }
+
+            const form = modalBody.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(event) {
                 });
-                modalBody.appendChild(template);
-                break;
+            }
         }
 
-        const form = modalBody.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function(event) {
+        function closeModal() {
+            modalContainer.style.display = 'none';
+        }
+
+        // Event listeners untuk tombol buka modal
+        openModalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modalId = this.dataset.modal;
+                let data = {};
+                if (this.dataset.id) {
+                    data.id = this.dataset.id;
+                }
+                if (this.dataset.name) {
+                    data.name = this.dataset.name;
+                }
+                if (this.dataset.stok) {
+                    data.stok = this.dataset.stok;
+                }
+                if (this.dataset.categoryId) {
+                    data.categoryId = this.dataset.categoryId;
+                }
+                openModal(modalId, data);
             });
+        });
+
+        // Event listener untuk tombol close modal
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', closeModal);
         }
-    }
 
-    function closeModal() {
-        modalContainer.style.display = 'none';
-    }
-
-    // Event listeners untuk tombol buka modal
-    openModalButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const modalId = this.dataset.modal;
-            let data = {};
-            if (this.dataset.id) {
-                data.id = this.dataset.id;
+        // Menutup modal jika area di luar modal diklik
+        window.addEventListener('click', function(event) {
+            if (event.target === modalContainer) {
+                closeModal();
             }
-            if (this.dataset.name) {
-                data.name = this.dataset.name;
-            }
-            if (this.dataset.stok) {
-                data.stok = this.dataset.stok;
-            }
-            if (this.dataset.categoryId) {
-                data.categoryId = this.dataset.categoryId;
-            }
-            openModal(modalId, data);
         });
     });
-
-    // Event listener untuk tombol close modal
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', closeModal);
-    }
-
-    // Menutup modal jika area di luar modal diklik
-    window.addEventListener('click', function(event) {
-        if (event.target === modalContainer) {
-            closeModal();
-        }
-    });
-});
-</script>
+    </script>
 </body>
 </html>

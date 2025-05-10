@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Home</title>
-        <style>
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -55,6 +55,11 @@
 
         .sidebar a:hover {
             background: #2563eb;
+        }
+
+        .sidebar a.active {
+            background: #6293ff;
+            font-weight: bold;
         }
 
         .sidebar h1 {
@@ -118,70 +123,73 @@
             background: #1e3a8a;
             color: white;
         }
-        </style>
-    </head>
-    <body>
-        <div class="nav">
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
-            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-        </div>
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+    </div>
 
-        <div class="sidebar">
-            <img class="img" src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
-            <h1>SARPRAS</h1>
-            <a href="{{ route('home') }}">Home</a>
-            <a href="{{ route('users') }}">Users</a>
-            <a href="{{ route('crud') }}">Create</a>
-        </div>
+    <div class="sidebar">
+        <img class="img" src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
+        <h1>SARPRAS</h1>
+        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+        <a href="{{ route('users') }}" class="{{ request()->routeIs('users') ? 'active' : '' }}">Users</a>
+        <a href="{{ route('crud') }}" class="{{ request()->routeIs('crud') ? 'active' : '' }}">Create</a>
+        <a href="{{ route('peminjaman') }}" class="{{ request()->routeIs('peminjaman') ? 'active' : '' }}">Peminjaman</a>
+    </div>
 
-        <div class="main-content">
-            <div class="card">
-                <h2>Daftar Barang</h2>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr><th>No</th><th>Nama</th><th>Stok</th><th>Kategori</th></tr>
-                        </thead>
-                        <tbody>
-                            @forelse($items as $i => $it)
-                                <tr>
-                                    <td>{{ $i+1 }}</td>
-                                    <td>{{ $it->name }}</td>
-                                    <td>{{ $it->stok }}</td>
-                                    <td>{{ $it->category->name ?? '-' }}</td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="4">Belum ada data barang</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Daftar User</h2>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr><th>No</th><th>Username</th><th>Email</th><th>Terdaftar</th></tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($users as $i => $user)
-                                <tr>
-                                    <td>{{ $i + 1 }}</td>
-                                    <td>{{ $user->username }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>{{ $user->created_at->format('d M Y') }}</td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="4">Belum ada user terdaftar</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+    <div class="main-content">
+        <div class="card">
+            <h2>Daftar Barang</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>No</th><th>Nama</th><th>Stok</th><th>Kategori</th></tr>
+                    </thead>
+                    <tbody>
+                        @forelse($items as $i => $it)
+                            <tr>
+                                <td>{{ $i+1 }}</td>
+                                <td>{{ $it->name }}</td>
+                                <td>{{ $it->stok }}</td>
+                                <td>{{ $it->category->name ?? '-' }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4">Belum ada data barang</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-    </body>
+
+        <div class="card">
+            <h2>Daftar User</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>No</th><th>Username</th><th>Email</th><th>Terdaftar</th></tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($users as $i => $user)
+                            <tr>
+                                <td>{{ $i + 1 }}</td>
+                                <td>{{ $user->username }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ $user->created_at->format('d M Y') }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="4">Belum ada user terdaftar</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
 </html>

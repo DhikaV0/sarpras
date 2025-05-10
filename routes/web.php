@@ -13,7 +13,7 @@ use App\Http\Controllers\MainController;
 */
 
 Route::get('/', function () {
-    return redirect()->route('auth.register');
+    return redirect()->route('register');
 });
 
 // AUTH ROUTES (GUEST ONLY)
@@ -46,6 +46,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/item', [MainController::class, 'storeItem'])->name('item.store');
     Route::put('/item/{id}', [MainController::class, 'updateItem'])->name('item.update');
     Route::delete('/item/{id}', [MainController::class, 'deleteItem'])->name('item.delete');
+
+    // Peminjaman
+    Route::get('/peminjaman', [MainController::class, 'showPeminjaman'])->name('peminjaman');
+    Route::post('/peminjaman/store', [MainController::class, 'Peminjaman'])->name('peminjaman.store');
+    Route::put('/peminjaman/update/{id}', [MainController::class, 'update'])->name('peminjaman.update');
+    Route::delete('/peminjaman/delete/{id}', [MainController::class, 'destroy'])->name('peminjaman.delete');
 
     // Logout
     Route::post('/logout', [MainController::class, 'logout'])->name('logout');
