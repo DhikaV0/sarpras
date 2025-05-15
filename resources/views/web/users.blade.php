@@ -35,7 +35,7 @@
             left: 0;
             height: 100%;
             width: 220px;
-            background: #1e3a8a;
+            background: #002793;
             padding-top: 20px;
             box-shadow: 2px 0 8px rgba(0,0,0,0.1);
             display: flex;
@@ -57,7 +57,25 @@
         }
 
         .sidebar a.active {
-            background: #6293ff;
+            background: #3700ff;
+        }
+
+        .logo-container {
+            background: #85a6ff;
+            padding-right: 20px;
+            padding-left: 20px;
+            padding-bottom: 10px;
+            margin: 0 auto;
+            border-radius: 15px;
+            width: 120px;
+            text-align: center;
+        }
+
+        .logo-container img {
+            width: 60px;
+            height: 60px;
+            display: block;
+            margin: 0 auto 8px;
         }
 
         .sidebar img {
@@ -70,7 +88,6 @@
         .sidebar h1 {
             color: white;
             text-align: center;
-            margin-bottom: 30px;
             font-size: 20px;
         }
 
@@ -177,9 +194,11 @@
     </div>
 
     <div class="sidebar">
-        <img class="img" src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
-        <h1>SARPRAS</h1>
-        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+        <div class="logo-container">
+            <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
+            <h1>SARPRAS</h1>
+        </div>
+        <a style="margin-top: 50px;" href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
         <a href="{{ route('users') }}" class="{{ request()->routeIs('users') ? 'active' : '' }}">Users</a>
         <a href="{{ route('crud') }}" class="{{ request()->routeIs('crud') ? 'active' : '' }}">Create</a>
         <a href="{{ route('peminjaman') }}" class="{{ request()->routeIs('peminjaman') ? 'active' : '' }}">Peminjaman</a>

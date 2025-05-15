@@ -37,7 +37,7 @@
             left: 0;
             height: 100%;
             width: 220px;
-            background: #1e3a8a;
+            background: #002793;
             padding-top: 20px;
             box-shadow: 2px 0 8px rgba(0,0,0,0.1);
             display: flex;
@@ -59,13 +59,30 @@
         }
 
         .sidebar a.active {
-            background: #6293ff;
+            background: #3700ff;
+        }
+
+        .logo-container {
+            background: #85a6ff;
+            padding-right: 20px;
+            padding-left: 20px;
+            padding-bottom: 10px;
+            margin: 0 auto;
+            border-radius: 15px;
+            width: 120px;
+            text-align: center;
+        }
+
+        .logo-container img {
+            width: 60px;
+            height: 60px;
+            display: block;
+            margin: 0 auto 8px;
         }
 
         .sidebar h1 {
             color: white;
             text-align: center;
-            margin-bottom: 30px;
             font-size: 20px;
         }
 
@@ -209,9 +226,11 @@
     </div>
 
     <div class="sidebar">
-        <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
-        <h1>SARPRAS</h1>
-        <a href="{{ route('home') }}">Home</a>
+        <div class="logo-container">
+            <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
+            <h1>SARPRAS</h1>
+        </div>
+        <a style="margin-top: 50px;" href="{{ route('home') }}">Home</a>
         <a href="{{ route('users') }}">Users</a>
         <a href="{{ route('crud') }}">Create</a>
         <a href="{{ route('peminjaman') }}" class="active">Peminjaman</a>
@@ -249,7 +268,7 @@
                                 <td>{{ $pinjam->item->name }}</td>
                                 <td>{{ $pinjam->jumlah_pinjam }}</td>
                                 <td>{{ $pinjam->tanggal_pinjam }}</td>
-                                <td>{{ $pinjam->tanggal_kembali ?? '-' }}</td> {{-- Tampilkan '-' jika belum kembali --}}
+                                <td>{{ $pinjam->tanggal_kembali ?? '-' }}</td>
                                 <td>{{ $pinjam->status }}</td>
                                 <td>
                                     <button class="action-btn btn-edit open-modal-btn" data-modal="editPeminjamanModal"

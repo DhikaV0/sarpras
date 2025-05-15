@@ -34,24 +34,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/users', [MainController::class, 'showUsers'])->name('users');
     Route::post('/users', [MainController::class, 'storeUser'])->name('users.store');
 
-    // CRUD
+    // CRUD Main Page
     Route::get('/crud', [MainController::class, 'showCrudPage'])->name('crud');
 
-    // Categories
+    // Categories CRUD
     Route::post('/category', [MainController::class, 'storeCategory'])->name('category.store');
     Route::put('/category/{id}', [MainController::class, 'updateCategory'])->name('category.update');
     Route::delete('/category/{id}', [MainController::class, 'deleteCategory'])->name('category.delete');
 
-    // Items
+    // Items CRUD
     Route::post('/item', [MainController::class, 'storeItem'])->name('item.store');
     Route::put('/item/{id}', [MainController::class, 'updateItem'])->name('item.update');
     Route::delete('/item/{id}', [MainController::class, 'deleteItem'])->name('item.delete');
 
     // Peminjaman
     Route::get('/peminjaman', [MainController::class, 'showPeminjaman'])->name('peminjaman');
-    Route::post('/peminjaman/store', [MainController::class, 'Peminjaman'])->name('peminjaman.store');
-    Route::put('/peminjaman/update/{id}', [MainController::class, 'update'])->name('peminjaman.update');
-    Route::delete('/peminjaman/delete/{id}', [MainController::class, 'destroy'])->name('peminjaman.delete');
+    Route::post('/peminjaman', [MainController::class, 'storePeminjaman'])->name('peminjaman.store');
+    Route::put('/peminjaman/{id}', [MainController::class, 'updatePeminjaman'])->name('peminjaman.update');
+    Route::delete('/peminjaman/{id}', [MainController::class, 'destroy'])->name('peminjaman.delete');
 
     // Logout
     Route::post('/logout', [MainController::class, 'logout'])->name('logout');

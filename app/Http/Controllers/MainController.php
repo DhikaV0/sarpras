@@ -26,6 +26,7 @@ class MainController extends Controller
             'username' => 'required|unique:users',
             'email'    => 'required|email|unique:users',
             'password' => 'required|confirmed|min:5',
+            'role'     => 'required|in:user,admin',
         ]);
 
         if ($validator->fails()) {
@@ -36,11 +37,20 @@ class MainController extends Controller
             'username' => $request->username,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'role'     => $request->role,
         ]);
 
         Auth::login($user);
-        return redirect()->route('home');
+        if ($user->role === 'admin') {
+            return view('web.home');
+        } elseif ($user->role === 'user') {
+            return view('mobile.home');
+        } else {
+            Auth::logout();
+            return redirect()->route('login')->withErrors(['role' => 'Role tidak dikenali.']);
+        }
     }
+
 
     public function showLoginForm()
     {
@@ -51,11 +61,19 @@ class MainController extends Controller
     {
         $credentials = $request->only('username', 'password');
 
-        if (Auth::attempt($credentials)) {
-            return redirect()->route('home');
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            return view('web.home');
+        } elseif ($user->role === 'user') {
+            return view('mobile.home');
+        } else {
+            Auth::logout();
+            return back()->withErrors(['login' => 'Role pengguna tidak valid.'])->withInput();
         }
-        else {
-            return back()->withErrors(['login' => 'Username atau password salah'])->withInput();
+        } else {
+        return back()->withErrors(['login' => 'Username atau password salah'])->withInput();
         }
     }
 
@@ -74,14 +92,14 @@ class MainController extends Controller
         $categories = Category::all();
         $items = Item::with('category')->get();
 
-        return view('pages.home', compact('users', 'categories', 'items'));
+        return view('web.home', compact('users', 'categories', 'items'));
     }
 
     // USERS
     public function showUsers()
     {
         $users = User::all();
-        return view('pages.users', compact('users'));
+        return view('web.users', compact('users'));
     }
 
     public function storeUser(Request $request)
@@ -96,6 +114,7 @@ class MainController extends Controller
             'username' => $request->username,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'role'     => $request->role,
         ]);
 
         return redirect()->route('users')->with('success', 'User berhasil ditambahkan.');
@@ -107,14 +126,14 @@ class MainController extends Controller
         $categories = Category::all();
         $items      = Item::with('category')->get();
 
-        return view('pages.crud', compact('categories', 'items'));
+        return view('web.crud', compact('categories', 'items'));
     }
 
     // CATEGORY CRUD
     public function showCategories()
     {
         $categories = Category::all();
-        return view('pages.crud', compact('categories'));
+        return view('web.crud', compact('categories'));
     }
 
     public function storeCategory(Request $request)
@@ -150,7 +169,7 @@ class MainController extends Controller
     public function showItems()
     {
         $items = Item::with('category')->get();
-        return view('pages.crud', compact('items'));
+        return view('web.crud', compact('items'));
     }
 
     public function storeItem(Request $request)
@@ -216,7 +235,7 @@ class MainController extends Controller
         $items = Item::all();
         $users = User::all();
         $peminjaman = Peminjaman::with(['user', 'item'])->get();
-        return view('pages.peminjaman', compact('peminjaman', 'items', 'users'));
+        return view('web.peminjaman', compact('peminjaman', 'items', 'users'));
     }
 
     public function Peminjaman(Request $request)

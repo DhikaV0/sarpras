@@ -76,7 +76,7 @@
             font-weight: bold;
             cursor: pointer;
         }
-        
+
         .container button:hover {
             background-color: #2563eb;
         }
@@ -102,6 +102,14 @@
 
             <div class="form-group">
                 <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
+            </div>
+
+             <div class="form-group">
+                <label for="role">Role</label>
+                <select name="role" id="role" class="form-control" required>
+                    <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                </select>
             </div>
 
             <p class="underform-text">
