@@ -36,6 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/items/{id}', [MainApiController::class, 'updateItem']);
     Route::delete('/items/{id}', [MainApiController::class, 'deleteItem']);
 
+    // PEMINJAMAN
+    Route::post('/peminjaman', [MainApiController::class, 'store']);
+
     // Get current user
     Route::get('/user', function (Request $request) {
         return $request->user();

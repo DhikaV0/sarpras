@@ -358,7 +358,6 @@
                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                 @endforeach
             </select>
-            <input type="text" name="deskripsi" placeholder="Deskripsi">
             <input type="file" name="foto" accept="image/*">
             <button type="submit">Simpan</button>
         </form>

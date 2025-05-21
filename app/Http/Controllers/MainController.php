@@ -22,35 +22,26 @@ class MainController extends Controller
 
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'username' => 'required|unique:users',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|confirmed|min:5',
-            'role'     => 'required|in:user,admin',
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|in:admin,user',
         ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
 
         $user = User::create([
             'username' => $request->username,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => $request->role,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => $request->role,
         ]);
 
         Auth::login($user);
-        if ($user->role === 'admin') {
-            return view('web.home');
-        } elseif ($user->role === 'user') {
-            return view('mobile.home');
-        } else {
-            Auth::logout();
-            return redirect()->route('login')->withErrors(['role' => 'Role tidak dikenali.']);
-        }
-    }
 
+        return $user->role === 'admin'
+            ? redirect('mobile/home')
+            : redirect('web/home');
+    }
 
     public function showLoginForm()
     {
@@ -59,22 +50,26 @@ class MainController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->only('username', 'password');
+        $request->validate([
+        'username' => 'required|string',
+        'password' => 'required',
+        ]);
 
-    if (Auth::attempt($credentials)) {
-        $user = Auth::user();
+        if (Auth::attempt($request->only('username', 'password'))) {
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                return redirect()->intended('web/home');
+            } elseif ($user->role === 'user') {
+                return redirect()->intended('mobile/home');
+            } else {
+                Auth::logout();
+                return redirect()->route('login')->with('error', 'Role tidak dikenal.');
+            }
+        }
 
-        if ($user->role === 'admin') {
-            return view('web.home');
-        } elseif ($user->role === 'user') {
-            return view('mobile.home');
-        } else {
-            Auth::logout();
-            return back()->withErrors(['login' => 'Role pengguna tidak valid.'])->withInput();
-        }
-        } else {
-        return back()->withErrors(['login' => 'Username atau password salah'])->withInput();
-        }
+        return back()->withErrors([
+            'email' => 'Username atau password salah.',
+        ]);
     }
 
     public function logout(Request $request)
@@ -92,7 +87,16 @@ class MainController extends Controller
         $categories = Category::all();
         $items = Item::with('category')->get();
 
-        return view('web.home', compact('users', 'categories', 'items'));
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                return view('web.home', compact('users', 'categories', 'items'));
+            } elseif ($user->role === 'user') {
+                return view('mobile.home', compact('users', 'categories', 'items'));
+            }
+        }
+
+        return redirect()->route('login')->with('error', 'Akses ditolak.');
     }
 
     // USERS
@@ -114,7 +118,7 @@ class MainController extends Controller
             'username' => $request->username,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => $request->role,
+            'role'     => $request->role ?? 'user',
         ]);
 
         return redirect()->route('users')->with('success', 'User berhasil ditambahkan.');
@@ -178,7 +182,6 @@ class MainController extends Controller
             'name'        => 'required|string|max:255',
             'stok'        => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'deskripsi'   => 'nullable|string',
             'foto'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -199,7 +202,6 @@ class MainController extends Controller
             'name'        => 'required|string|max:255',
             'stok'        => 'required|integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'deskripsi'   => 'nullable|string',
             'foto'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -232,49 +234,46 @@ class MainController extends Controller
     // PEMINJAMAN
     public function showPeminjaman()
     {
-        $items = Item::all();
-        $users = User::all();
-        $peminjaman = Peminjaman::with(['user', 'item'])->get();
-        return view('web.peminjaman', compact('peminjaman', 'items', 'users'));
+        $peminjaman = Peminjaman::with(['user', 'items'])->latest()->get();
+        return view('web.peminjaman', compact('peminjaman'));
     }
 
-    public function Peminjaman(Request $request)
+    public function approve($id)
     {
-        $request->validate([
-            'item_id' => 'required|exists:items,id',
-            'jumlah_pinjam' => 'required|integer|min:1',
-            'tanggal_pinjam' => 'required|date',
-            'tanggal_kembali' => 'nullable|date|after_or_equal:tanggal_pinjam',
-        ]);
+        $peminjaman = Peminjaman::findOrFail($id);
+        $items = Item::findOrFail($peminjaman->items_id);
 
-        $item = Item::findOrFail($request->item_id);
-
-        if ($item->stok < $request->jumlah_pinjam) {
-            return back()->with('error', 'Stok tidak mencukupi.');
+        if ($items->stok < $peminjaman->jumlah_pinjam) {
+            return back()->with('error', 'Stok tidak mencukupi untuk disetujui.');
         }
 
-        $item->stok -= $request->jumlah_pinjam;
-        $item->save();
+        $peminjaman->status = 'disetujui';
+        $peminjaman->save();
 
-        Peminjaman::create([
-            'users_id' => $request->users_id,
-            'items_id' => $request->item_id,
-            'jumlah_pinjam' => $request->jumlah_pinjam,
-            'tanggal_pinjam' => $request->tanggal_pinjam,
-            'tanggal_kembali' => $request->tanggal_kembali,
-            'status' => 'pinjam',
-        ]);
+        $items->stok -= $peminjaman->jumlah_pinjam;
+        $items->save();
 
-        return redirect()->back()->with('success', 'Peminjaman berhasil.');
+        return back()->with('success', 'Peminjaman disetujui.');
+    }
+
+    public function reject($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+        $peminjaman->status = 'ditolak';
+        $peminjaman->save();
+
+        return back()->with('success', 'Peminjaman ditolak.');
     }
 
     public function destroy($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
 
-        $item = Item::findOrFail($peminjaman->items_id);
-        $item->stok += $peminjaman->jumlah_pinjam;
-        $item->save();
+        if ($peminjaman->status === 'disetujui') {
+            $item = Item::findOrFail($peminjaman->items_id);
+            $item->stok += $peminjaman->jumlah_pinjam;
+            $item->save();
+        }
 
         $peminjaman->delete();
 
@@ -300,7 +299,6 @@ class MainController extends Controller
 
     return redirect()->back()->with('success', 'Barang berhasil dikembalikan.');
     }
-
 
 }
 

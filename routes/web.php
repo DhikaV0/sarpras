@@ -28,6 +28,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
 
     // Home
+    Route::get('/web/home', [MainController::class, 'showHome'])->name('home');
+    Route::get('/mobile/home', [MainController::class, 'showHome'])->name('mobile.home');
     Route::get('/home', [MainController::class, 'showHome'])->name('home');
 
     // Users

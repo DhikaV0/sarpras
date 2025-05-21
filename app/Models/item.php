@@ -10,7 +10,6 @@ class Item extends Model
         'name',
         'stok',
         'category_id',
-        'deskripsi',
         'foto'
     ];
 

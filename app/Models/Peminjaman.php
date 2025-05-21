@@ -10,12 +10,14 @@ class Peminjaman extends Model
     use HasFactory;
 
     protected $fillable = [
-        'users_id',
-        'items_id',
-        'tanggal_pinjam',
-        'tanggal_kembali',
-        'status',
+    'users_id',
+    'items_id',
+    'jumlah_pinjam',
+    'tanggal_pinjam',
+    'tanggal_kembali',
+    'status',
     ];
+
     protected $table = 'peminjaman';
     public function user()
     {

@@ -68,33 +68,26 @@ class MainApiController extends Controller
     }
 
     // PEMINJAMAN API
-    public function Peminjaman(Request $request)
+      public function store(Request $request)
     {
         $request->validate([
-            'users_id'    => 'required|exists:users,id',
-            'items_id'    => 'required|exists:items,id',
+            'items_id' => 'required|exists:items,id',
             'jumlah_pinjam' => 'required|integer|min:1',
             'tanggal_pinjam' => 'required|date',
         ]);
 
-        $item = Item::find($request->items_id);
-
-        if ($item->stok < $request->jumlah_pinjam) {
-            return response()->json(['message' => 'Stok tidak mencukupi'], 400);
-        }
-
-        $item->stok -= $request->jumlah_pinjam;
-        $item->save();
-
         $peminjaman = Peminjaman::create([
-            'users_id'       => $request->users_id,
-            'items_id'       => $request->items_id,
-            'jumlah_pinjam'  => $request->jumlah_pinjam,
+            'users_id' => auth()->id(),
+            'items_id' => $request->items_id,
+            'jumlah_pinjam' => $request->jumlah_pinjam,
             'tanggal_pinjam' => $request->tanggal_pinjam,
-            'status'         => 'pinjam',
+            'status' => 'pinjam',
         ]);
 
-        return response()->json(['message' => 'Peminjaman berhasil', 'data' => $peminjaman]);
+        return response()->json([
+            'message' => 'Peminjaman berhasil diajukan.',
+            'data' => $peminjaman
+        ], 201);
     }
 
     // PENGEMBALIAN API
