@@ -13,7 +13,7 @@ use App\Http\Controllers\MainController;
 */
 
 Route::get('/', function () {
-    return redirect()->route('register');
+    return redirect()->route('login');
 });
 
 // AUTH ROUTES (GUEST ONLY)
@@ -51,9 +51,14 @@ Route::middleware('auth')->group(function () {
 
     // Peminjaman
     Route::get('/peminjaman', [MainController::class, 'showPeminjaman'])->name('peminjaman');
-    Route::post('/peminjaman', [MainController::class, 'storePeminjaman'])->name('peminjaman.store');
-    Route::put('/peminjaman/{id}', [MainController::class, 'updatePeminjaman'])->name('peminjaman.update');
     Route::delete('/peminjaman/{id}', [MainController::class, 'destroy'])->name('peminjaman.delete');
+    Route::post('/peminjaman/{id}/approve', [MainController::class, 'approve'])->name('peminjaman.approve');
+    Route::post('/peminjaman/{id}/reject', [MainController::class, 'reject'])->name('peminjaman.reject');
+
+    // Pengembalian
+    Route::get('/pengembalian', [MainController::class, 'showPengembalian'])->name('pengembalian');
+    Route::put('/pengembalian/{id}/approve', [MainController::class, 'approvePengembalian'])->name('pengembalian.approve');
+    Route::put('/pengembalian/{id}/reject', [MainController::class, 'rejectPengembalian'])->name('pengembalian.reject');
 
     // Logout
     Route::post('/logout', [MainController::class, 'logout'])->name('logout');

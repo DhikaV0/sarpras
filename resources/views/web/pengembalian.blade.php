@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Peminjaman</title>
+    <title>Pengembalian Barang</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -86,7 +86,7 @@
             font-size: 20px;
         }
 
-         .sidebar img {
+        .sidebar img {
             width: 100px;
             height: auto;
             margin: 0 auto;
@@ -96,12 +96,12 @@
         .main-content {
             margin-left: 250px;
             padding: 30px;
-            max-width: 1200px;
+            max-width: 1400px;
         }
 
         .card {
             background: white;
-            padding: 20px;
+            padding: 30px;
             margin-bottom: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -150,6 +150,11 @@
             color: white;
         }
 
+        .btn-return-approve {
+            background: #10B981; /* Hijau yang berbeda */
+            color: white;
+        }
+
         button {
             background: #2563eb;
             color: white;
@@ -166,6 +171,17 @@
             margin-top: 10px;
         }
 
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .foto-preview {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -181,7 +197,7 @@
             <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
             <h1>SARPRAS</h1>
         </div>
-        <a style="margin-top: 50px;" href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+        <a style="margin-top: 50px;" href="{{ route('home') }}">Home</a>
         <a href="{{ route('users') }}" class="{{ request()->routeIs('users') ? 'active' : '' }}">Users</a>
         <a href="{{ route('crud') }}" class="{{ request()->routeIs('crud') ? 'active' : '' }}">Create</a>
         <a href="{{ route('peminjaman') }}" class="{{ request()->routeIs('peminjaman') ? 'active' : '' }}">Peminjaman</a>
@@ -190,7 +206,7 @@
 
     <div class="main-content">
         <div class="card">
-            <h2>Daftar Peminjaman</h2>
+            <h2>Daftar Pengajuan Pengembalian</h2>
 
             @if(session('success'))
                 <p class="success-message">{{ session('success') }}</p>
@@ -206,41 +222,55 @@
                             <th>No</th>
                             <th>Peminjam</th>
                             <th>Barang</th>
-                            <th>Jumlah</th>
-                            <th>Tanggal Pinjam</th>
-                            <th>Status Peminjaman</th>
-                            <th>Aksi</th>
+                            <th>Jumlah Pinjam</th>
+                            <th>Tanggal Pinjam</th> <th>Tanggal Pengajuan Kembali</th>
+                            <th>Deskripsi Pengembalian</th>
+                            <th>Foto Pengembalian</th>
+                            <th>Status Pengajuan</th> <th>Disetujui Oleh</th>
+                            <th>Tanggal Disetujui</th> <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($peminjaman as $i => $pinjam)
+                        @forelse($pengembalians as $i => $pengajuan)
                             <tr>
                                 <td>{{ $i + 1 }}</td>
-                                <td>{{ $pinjam->user->username }}</td>
-                                <td>{{ $pinjam->items->name }}</td>
-                                <td>{{ $pinjam->jumlah_pinjam }}</td>
-                                <td>{{ \Carbon\Carbon::parse($pinjam->tanggal_pinjam)->format('d-m-Y') }}</td>
-                                <td>{{ ucfirst($pinjam->status) }}</td>
+                                <td>{{ $pengajuan->peminjaman->user->username }}</td>
+                                <td>{{ $pengajuan->peminjaman->items->name }}</td>
+                                <td>{{ $pengajuan->peminjaman->jumlah_pinjam }}</td>
+                                <td>{{ \Carbon\Carbon::parse($pengajuan->peminjaman->tanggal_pinjam)->format('d-m-Y') }}</td>
+
+                                <td>{{ $pengajuan->tanggal_pengajuan_kembali ? \Carbon\Carbon::parse($pengajuan->tanggal_pengajuan_kembali)->format('d-m-Y H:i') : '-' }}</td>
+                                <td>{{ $pengajuan->deskripsi_pengembalian ?? '-' }}</td>
                                 <td>
-                                    @if($pinjam->status === 'menunggu')
-                                        <form method="POST" action="{{ route('peminjaman.approve', $pinjam->id) }}" style="display:inline">
+                                    @if($pengajuan->foto_pengembalian)
+                                        <img src="{{ asset('storage/' . $pengajuan->foto_pengembalian) }}" alt="Foto Pengembalian" class="foto-preview" width="50">
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td>{{ ucfirst(str_replace('_', ' ', $pengajuan->status_pengembalian)) }}</td>
+                                <td>{{ $pengajuan->returnedBy?->username ?? '-' }}</td>
+                                <td>{{ $pengajuan->tanggal_disetujui ? \Carbon\Carbon::parse($pengajuan->tanggal_disetujui)->format('d-m-Y H:i') : '-' }}</td>
+                                <td>
+                                    @if($pengajuan->status_pengembalian === 'diajukan')
+                                        <form method="POST" action="{{ route('pengembalian.approve', $pengajuan->id) }}" style="display:inline">
                                             @csrf
-                                            <button class="action-btn btn-approve" type="submit">Setujui</button>
+                                            @method('PUT')
+                                            <button class="action-btn btn-return-approve" type="submit">Setujui</button>
                                         </form>
-                                        <form method="POST" action="{{ route('peminjaman.reject', $pinjam->id) }}" style="display:inline">
+                                        <form method="POST" action="{{ route('pengembalian.reject', $pengajuan->id) }}" style="display:inline">
                                             @csrf
+                                            @method('PUT')
                                             <button class="action-btn btn-reject" type="submit">Tolak</button>
                                         </form>
                                     @else
-                                        <p style="opacity: 0.5; font-size: 12px;">
-                                            Diproses
-                                        </p>
+                                        <p style="opacity: 0.5; font-size: 12px;">Tidak Ada Aksi</p>
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7">Belum ada data peminjaman.</td>
+                                <td colspan="11">Belum ada data pengajuan pengembalian.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -111,6 +111,13 @@
             color: black;
         }
 
+        .item-image {
+            max-width: 50px;
+            max-height: 50px;
+            width: auto;
+            height: auto;
+        }
+
         .sidebar h2 {
             margin-top: 0;
         }
@@ -158,31 +165,40 @@
         <a href="{{ route('users') }}" class="{{ request()->routeIs('users') ? 'active' : '' }}">Users</a>
         <a href="{{ route('crud') }}" class="{{ request()->routeIs('crud') ? 'active' : '' }}">Create</a>
         <a href="{{ route('peminjaman') }}" class="{{ request()->routeIs('peminjaman') ? 'active' : '' }}">Peminjaman</a>
+        <a href="{{ route('pengembalian') }}" class="{{ request()->routeIs('pengembalian') ? 'active' : '' }}">Pengembalian</a>
     </div>
 
     <div class="main-content">
         <div class="card">
-            <h2>Daftar Barang</h2>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr><th>No</th><th>Nama</th><th>Stok</th><th>Kategori</th></tr>
-                    </thead>
-                    <tbody>
-                        @forelse($items as $i => $it)
-                            <tr>
-                                <td>{{ $i+1 }}</td>
-                                <td>{{ $it->name }}</td>
-                                <td>{{ $it->stok }}</td>
-                                <td>{{ $it->category->name ?? '-' }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4">Belum ada data barang</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <h2>Daftar Barang</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>No</th><th>Nama</th><th>Stok</th><th>Gambar</th><th>Kategori</th></tr>
+                </thead>
+                <tbody>
+                    @forelse($items as $i => $it)
+                    <tr>
+                        <td>{{ $i+1 }}</td>
+                        <td>{{ $it->name }}</td>
+                        <td>{{ $it->stok }}</td>
+                        <td>
+                            @if($it->foto)
+                            <img src="{{ asset('storage/' . $it->foto) }}" alt="{{ $it->name }}" class="item-image">
+                            @else
+                                Tidak ada gambar
+                            @endif
+                        </td>
+                        <td>{{ $it->category->name }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Tidak ada barang</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
             </div>
         </div>
 

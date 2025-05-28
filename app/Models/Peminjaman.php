@@ -9,23 +9,28 @@ class Peminjaman extends Model
 {
     use HasFactory;
 
+    protected $table = 'peminjamans';
     protected $fillable = [
-    'users_id',
-    'items_id',
-    'jumlah_pinjam',
-    'tanggal_pinjam',
-    'tanggal_kembali',
-    'status',
+        'users_id',
+        'items_id',
+        'jumlah_pinjam',
+        'tanggal_pinjam',
+        'status',
     ];
 
-    protected $table = 'peminjaman';
+
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'users_id');
     }
 
     public function items()
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(Item::class, 'items_id');
+    }
+
+    public function pengembalian()
+    {
+        return $this->hasOne(Pengembalian::class, 'peminjaman_id');
     }
 }

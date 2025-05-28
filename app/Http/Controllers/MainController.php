@@ -11,6 +11,8 @@ use Illuminate\support\Facades\Storage;
 use App\Models\Category;
 use App\Models\Item;
 use App\Models\Peminjaman;
+use App\Models\Pengembalian;
+use Illuminate\Support\Facades\DB;
 
 class MainController extends Controller
 {
@@ -25,7 +27,7 @@ class MainController extends Controller
         $request->validate([
             'username' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:5|confirmed',
             'role' => 'required|in:admin,user',
         ]);
 
@@ -68,7 +70,7 @@ class MainController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Username atau password salah.',
+            'username' => 'Username atau password salah.',
         ]);
     }
 
@@ -241,64 +243,95 @@ class MainController extends Controller
     public function approve($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
-        $items = Item::findOrFail($peminjaman->items_id);
 
-        if ($items->stok < $peminjaman->jumlah_pinjam) {
-            return back()->with('error', 'Stok tidak mencukupi untuk disetujui.');
+        if ($peminjaman->status !== 'menunggu') {
+            return back()->with('error', 'Peminjaman tidak dalam status menunggu.');
         }
 
-        $peminjaman->status = 'disetujui';
-        $peminjaman->save();
+        DB::transaction(function () use ($peminjaman) {
+            $item = Item::findOrFail($peminjaman->items_id);
+            if ($item->stok < $peminjaman->jumlah_pinjam) {
+                return back()->with('error', 'Stok tidak mencukupi untuk disetujui.');
+            }
 
-        $items->stok -= $peminjaman->jumlah_pinjam;
-        $items->save();
+            $peminjaman->status = 'dipinjam';
+            $peminjaman->save();
 
-        return back()->with('success', 'Peminjaman disetujui.');
+            $item->stok -= $peminjaman->jumlah_pinjam;
+            $item->save();
+        });
+
+        return back()->with('success', 'Peminjaman berhasil disetujui.');
     }
 
     public function reject($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
+
+        if ($peminjaman->status !== 'menunggu') {
+            return back()->with('error', 'Peminjaman tidak dalam status menunggu.');
+        }
+
         $peminjaman->status = 'ditolak';
         $peminjaman->save();
 
         return back()->with('success', 'Peminjaman ditolak.');
     }
 
-    public function destroy($id)
+    //PENGEMBALIAN
+    public function showPengembalian()
     {
-        $peminjaman = Peminjaman::findOrFail($id);
+        $pengembalians = Pengembalian::with(['peminjaman.user', 'peminjaman.items', 'returnedBy'])
+        ->latest()
+        ->get();
+        return view('web.pengembalian', compact('pengembalians'));
+    }
 
-        if ($peminjaman->status === 'disetujui') {
-            $item = Item::findOrFail($peminjaman->items_id);
-            $item->stok += $peminjaman->jumlah_pinjam;
-            $item->save();
+    public function approvePengembalian(Request $request, $id)
+    {
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return response()->json(['error' => 'Akses ditolak. Hanya admin yang dapat menyetujui pengembalian.'], 403);
         }
 
-        $peminjaman->delete();
+        $pengajuan = Pengembalian::with('peminjaman.items')->findOrFail($id);
+        $peminjaman = $pengajuan->peminjaman;
 
-        return redirect()->back()->with('success', 'Data peminjaman berhasil dihapus.');
+        if ($pengajuan->status_pengembalian !== 'diajukan') {
+            return response()->json(['error' => 'Pengajuan pengembalian tidak dalam status diajukan.'], 400);
+        }
+
+        DB::transaction(function () use ($pengajuan, $peminjaman) {
+            $item = $peminjaman->items;
+            $item->stok += $peminjaman->jumlah_pinjam;
+            $item->save();
+
+            $peminjaman->status = 'dikembalikan';
+            $peminjaman->save();
+
+            $pengajuan->status_pengembalian = 'disetujui';
+            $pengajuan->tanggal_disetujui = now();
+            $pengajuan->returned_by = Auth::id();
+            $pengajuan->save();
+        });
+
+        return back()->with(['success' => 'Pengembalian barang berhasil disetujui.'], 200);
     }
 
-    //PNGEMBALIAN
-    public function Pengembalian($id)
+    public function rejectPengembalian(Request $request, $id)
     {
-    $peminjaman = Peminjaman::findOrFail($id);
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            return response()->json(['error' => 'Akses ditolak. Hanya admin yang dapat menolak pengembalian.'], 403);
+        }
 
-    if ($peminjaman->status != 'pinjam') {
-        return back()->with('error', 'Barang sudah dikembalikan.');
+        $pengajuan = Pengembalian::with('peminjaman')->findOrFail($id);
+
+        if ($pengajuan->status_pengembalian !== 'diajukan') {
+            return response()->json(['error' => 'Pengajuan pengembalian tidak dalam status diajukan.'], 400);
+        }
+
+        $pengajuan->status_pengembalian = 'ditolak';
+        $pengajuan->save();
+
+        return response()->json(['success' => 'Pengembalian barang berhasil ditolak.'], 200);
     }
-
-    $item = Item::find($peminjaman->items_id);
-    $item->stok += $peminjaman->jumlah_pinjam;
-    $item->save();
-
-    $peminjaman->status = 'kembali';
-    $peminjaman->tanggal_kembali = now();
-    $peminjaman->save();
-
-    return redirect()->back()->with('success', 'Barang berhasil dikembalikan.');
-    }
-
 }
-

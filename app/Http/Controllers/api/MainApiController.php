@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Item;
 use App\Models\Peminjaman;
+use App\Models\Pengembalian;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -68,12 +70,17 @@ class MainApiController extends Controller
     }
 
     // PEMINJAMAN API
-      public function store(Request $request)
+    public function store(Request $request)
     {
+        $item = Item::findOrFail($request->items_id);
+        if ($item->stok < $request->jumlah_pinjam) {
+            return response()->json(['message' => 'Stok tidak mencukupi'], 400);
+        }
+
         $request->validate([
             'items_id' => 'required|exists:items,id',
             'jumlah_pinjam' => 'required|integer|min:1',
-            'tanggal_pinjam' => 'required|date',
+            'tanggal_pinjam' => 'required|date_format:Y-m-d', // Pastikan format YYYY-MM-DD
         ]);
 
         $peminjaman = Peminjaman::create([
@@ -81,7 +88,7 @@ class MainApiController extends Controller
             'items_id' => $request->items_id,
             'jumlah_pinjam' => $request->jumlah_pinjam,
             'tanggal_pinjam' => $request->tanggal_pinjam,
-            'status' => 'pinjam',
+            'status' => 'menunggu', // Status awal saat peminjaman diajukan
         ]);
 
         return response()->json([
@@ -90,25 +97,68 @@ class MainApiController extends Controller
         ], 201);
     }
 
-    // PENGEMBALIAN API
-    public function Pengembalian($id)
+    public function getMyPeminjaman()
     {
-        $peminjaman = Peminjaman::findOrFail($id);
+        $peminjaman = Peminjaman::with(['items.category', 'user', 'pengembalian'])
+        ->where('users_id', auth()->id())
+        ->latest()
+        ->get();
+        return response()->json($peminjaman);
+    }
 
-        if ($peminjaman->status !== 'pinjam') {
-            return response()->json(['message' => 'Barang sudah dikembalikan'], 400);
-        }
 
-        $item = Item::find($peminjaman->items_id);
-        $item->stok += $peminjaman->jumlah_pinjam;
-        $item->save();
-
-        $peminjaman->update([
-            'status' => 'kembali',
-            'tanggal_kembali' => now(),
+    // PENGEMBALIAN API
+    public function requestPengembalian(Request $request, $peminjamanId) // ID di sini adalah ID dari Peminjaman
+    {
+        $validator = Validator::make($request->all(), [
+            'deskripsi' => 'nullable|string|max:255',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        return response()->json(['message' => 'Barang berhasil dikembalikan', 'data' => $peminjaman]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $peminjaman = Peminjaman::where('id', $peminjamanId)
+        ->where('users_id', auth()->id())
+        ->first();
+
+        if (!$peminjaman) {
+            return response()->json(['message' => 'Peminjaman tidak ditemukan atau Anda tidak memiliki akses.'], 404);
+        }
+
+        if ($peminjaman->status !== 'dipinjam') {
+            return response()->json(['message' => 'Barang belum/tidak dalam status dipinjam.'], 400);
+        }
+
+        if ($peminjaman->pengembalian && $peminjaman->pengembalian->status_pengembalian === 'diajukan') {
+             return response()->json(['message' => 'Pengajuan pengembalian untuk peminjaman ini sudah diajukan dan sedang menunggu persetujuan.'], 400);
+        }
+
+        DB::transaction(function () use ($request, $peminjaman) {
+            $fotoPath = null;
+            if ($request->hasFile('foto')) {
+                $fotoPath = $request->file('foto')->store('foto_pengembalian', 'public');
+            }
+
+            Pengembalian::create([
+                'peminjaman_id' => $peminjaman->id,
+                'deskripsi_pengembalian' => $request->deskripsi,
+                'foto_pengembalian' => $fotoPath,
+                'tanggal_pengajuan_kembali' => now(),
+                'status_pengembalian' => 'diajukan',
+            ]);
+
+            $peminjaman->status = 'menunggu';
+            $peminjaman->save();
+        });
+
+        $peminjaman->load('pengembalian');
+
+        return response()->json([
+            'message' => 'Permintaan pengembalian berhasil diajukan. Menunggu persetujuan admin.',
+            'data' => $peminjaman
+        ], 201);
     }
 
 }

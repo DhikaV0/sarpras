@@ -39,6 +39,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // PEMINJAMAN
     Route::post('/peminjaman', [MainApiController::class, 'store']);
 
+    //PENGEMBALIAN
+    Route::post('/peminjaman/{id}/return', [MainApiController::class, 'requestPengembalian']);
+
+
     // Get current user
     Route::get('/user', function (Request $request) {
         return $request->user();
