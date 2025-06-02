@@ -246,6 +246,7 @@
         <a href="{{ route('crud') }}" class="{{ request()->routeIs('crud') ? 'active' : '' }}">Create</a>
         <a href="{{ route('peminjaman') }}" class="{{ request()->routeIs('peminjaman') ? 'active' : '' }}">Peminjaman</a>
         <a href="{{ route('pengembalian') }}" class="{{ request()->routeIs('pengembalian') ? 'active' : '' }}">Pengembalian</a>
+        <a href="{{ route('laporan') }}" class="{{ request()->routeIs('laporan') ? 'active' : '' }}">Laporan</a>
     </div>
 
 <div class="main-content">
@@ -408,7 +409,7 @@
 
         function openModal(modalId, data = {}) {
             let template;
-            modalBody.innerHTML = ''; // Bersihkan konten modal sebelumnya
+            modalBody.innerHTML = '';
             modalContainer.style.display = 'flex';
 
             switch (modalId) {

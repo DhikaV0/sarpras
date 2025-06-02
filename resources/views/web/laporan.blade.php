@@ -111,13 +111,6 @@
             color: black;
         }
 
-        .item-image {
-            max-width: 50px;
-            max-height: 50px;
-            width: auto;
-            height: auto;
-        }
-
         .sidebar h2 {
             margin-top: 0;
         }
@@ -171,59 +164,63 @@
 
     <div class="main-content">
         <div class="card">
-        <h2>Daftar Barang</h2>
+            <h2>Laporan Peminjaman & Pengembalian</h2>
 
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr><th>No</th><th>Nama</th><th>Stok</th><th>Gambar</th><th>Kategori</th></tr>
-                </thead>
-                <tbody>
-                    @forelse($items as $i => $it)
-                    <tr>
-                        <td>{{ $i+1 }}</td>
-                        <td>{{ $it->name }}</td>
-                        <td>{{ $it->stok }}</td>
-                        <td>
-                            @if($it->foto)
-                            <img src="{{ asset('storage/' . $it->foto) }}" alt="{{ $it->name }}" class="item-image">
-                            @else
-                                Tidak ada gambar
-                            @endif
-                        </td>
-                        <td>{{ $it->category->name }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" style="text-align: center;">Tidak ada barang</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            </div>
-        </div>
 
-        <div class="card">
-            <h2>Daftar User</h2>
-            <div class="table-wrap">
+            <hr>
+
+            <h3 style="color: black">Data Peminjaman</h3>
                 <table>
                     <thead>
-                        <tr><th>No</th><th>Username</th><th>Email</th><th>Terdaftar</th></tr>
+                        <tr>
+                            <th>Nama Peminjam</th>
+                            <th>Item</th>
+                            <th>Jumlah</th>
+                            <th>Status</th>
+                            <th>Tanggal</th>
+                        </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($users as $i => $user)
-                            <tr>
-                                <td>{{ $i + 1 }}</td>
-                                <td>{{ $user->username }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>{{ $user->created_at->format('d M Y') }}</td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="4">Belum ada user terdaftar</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                <tbody>
+                    @foreach($semuaPeminjaman as $pinjam)
+                    <tr>
+                        <td>{{ $pinjam->user->username }}</td>
+                        <td>{{ $pinjam->items->name }}</td>
+                        <td>{{ $pinjam->jumlah_pinjam }}</td>
+                        <td>{{ $pinjam->status }}</td>
+                        <td>{{ $pinjam->created_at->format('d M Y') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <h4 style="color: black">Total Peminjaman: {{ $totalPeminjaman }}</h4>
+
+            <hr>
+
+            <h3 style="color: black">Data Pengembalian</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nama Peminjam</th>
+                        <th>Item</th>
+                        <th>Jumlah</th>
+                        <th>Status Pengembalian</th>
+                        <th>Tanggal Disetujui</th>
+                    </tr>
+                </thead>
+            <tbody>
+                @foreach($semuaPengembalian as $kembali)
+                <tr>
+                    <td>{{ $kembali->peminjaman->user->username }}</td>
+                    <td>{{ $kembali->peminjaman->items->name }}</td>
+                    <td>{{ $kembali->peminjaman->jumlah_pinjam }}</td>
+                    <td>{{ $kembali->status_pengembalian }}</td>
+                    <td>{{ $kembali->tanggal_disetujui ? \Carbon\Carbon::parse($kembali->tanggal_disetujui)->format('d M Y') : '-' }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+            </table>
+            <h4 style="color: black">Total Pengembalian: {{ $totalPengembalian }}</h4>
+
         </div>
     </div>
 </body>

@@ -334,4 +334,16 @@ class MainController extends Controller
 
         return response()->json(['success' => 'Pengembalian barang berhasil ditolak.'], 200);
     }
+
+    //LAPORAN
+    public function showLaporan()
+    {
+        $semuaPeminjaman = Peminjaman::with(['user', 'items'])->latest()->get();
+        $semuaPengembalian = Pengembalian::with(['peminjaman.user', 'peminjaman.items', 'returnedBy'])->latest()->get();
+
+        $totalPeminjaman = $semuaPeminjaman->count();
+        $totalPengembalian = $semuaPengembalian->count();
+
+        return view('web.laporan', compact('semuaPeminjaman', 'semuaPengembalian', 'totalPeminjaman', 'totalPengembalian'));
+    }
 }

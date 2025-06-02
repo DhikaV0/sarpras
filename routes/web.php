@@ -60,6 +60,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/pengembalian/{id}/approve', [MainController::class, 'approvePengembalian'])->name('pengembalian.approve');
     Route::put('/pengembalian/{id}/reject', [MainController::class, 'rejectPengembalian'])->name('pengembalian.reject');
 
+    // Laporan
+    Route::get('/laporan', [MainController::class, 'showLaporan'])->name('laporan');
+
     // Logout
     Route::post('/logout', [MainController::class, 'logout'])->name('logout');
 });
