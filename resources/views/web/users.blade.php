@@ -2,277 +2,165 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pengguna</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #bbddff;
-            margin: 0;
-        }
-
-        .nav {
-            background-color: #002793;
-            padding: 30px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            margin-bottom: 50px;
-        }
-
-        .nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-            margin-left: 1500px;
-            padding: 15px 20px;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 220px;
-            background: #002793;
-            padding-top: 20px;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-        }
-
-        .sidebar a {
-            padding: 15px 20px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            display: block;
-            transition: background 0.3s;
-        }
-
-        .sidebar a:hover {
-            background: #2563eb;
-        }
-
-        .sidebar a.active {
-            background: #3700ff;
-        }
-
-        .logo-container {
-            background: #85a6ff;
-            padding-right: 20px;
-            padding-left: 20px;
-            padding-bottom: 10px;
-            margin: 0 auto;
-            border-radius: 15px;
-            width: 120px;
-            text-align: center;
-        }
-
-        .logo-container img {
-            width: 60px;
-            height: 60px;
-            display: block;
-            margin: 0 auto 8px;
-        }
-
-        .sidebar img {
-            width: 100px;
-            height: auto;
-            margin: 0 auto;
-            display: block;
-        }
-
-        .sidebar h1 {
-            color: white;
-            text-align: center;
-            font-size: 20px;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-            max-width: 1200px;
-        }
-
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            margin-top: 0;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px 15px;
-            text-align: left;
-        }
-
-        th {
-            background: #1e3a8a;
-            color: white;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            width: 400px;
-            max-width: 90%;
-            position: relative;
-        }
-
-        .action-btn {
-            background: #1e3a8a;
-            color: white;
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .close {
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            font-size: 22px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .modal-content input {
-            width: 95%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            margin-top: 5px;
-        }
-
-
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="nav">
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
-        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-    </div>
-
-    <div class="sidebar">
-        <div class="logo-container">
-            <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
-            <h1>SARPRAS</h1>
+<body class="bg-blue-50">
+    <!-- Navbar -->
+    <div class="bg-blue-900 p-4 sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto flex justify-end">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+               class="text-white hover:text-blue-200 font-semibold px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </a>
         </div>
-        <a style="margin-top: 50px;" href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
-        <a href="{{ route('users') }}" class="{{ request()->routeIs('users') ? 'active' : '' }}">Users</a>
-        <a href="{{ route('crud') }}" class="{{ request()->routeIs('crud') ? 'active' : '' }}">Create</a>
-        <a href="{{ route('peminjaman') }}" class="{{ request()->routeIs('peminjaman') ? 'active' : '' }}">Peminjaman</a>
-        <a href="{{ route('pengembalian') }}" class="{{ request()->routeIs('pengembalian') ? 'active' : '' }}">Pengembalian</a>
-        <a href="{{ route('laporan') }}" class="{{ request()->routeIs('laporan') ? 'active' : '' }}">Laporan</a>
     </div>
 
-    <div class="main-content">
-        <div class="card">
-            <h2>Daftar Pengguna</h2>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>Terdaftar</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($users as $i => $user)
-                            <tr>
-                                <td>{{ $i + 1 }}</td>
-                                <td>{{ $user->username }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>{{ $user->created_at->format('d M Y') }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4">Belum ada data pengguna</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-blue-900 text-white shadow-lg z-40 pt-20">
+        <div class="flex flex-col items-center mb-10 px-4">
+            <div class="bg-blue-400 p-4 rounded-xl w-40 text-center mb-6">
+                <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png"
+                     alt="Logo" class="w-16 h-16 mx-auto mb-2">
+                <h1 class="text-lg font-bold">SARPRAS</h1>
             </div>
-            <button onclick="document.getElementById('addUserModal').style.display='flex'" class="action-btn">Tambah User</button>
-            <div id="addUserModal" class="modal" style="display:none;">
-                <div class="modal-content">
-                    <span class="close" onclick="document.getElementById('addUserModal').style.display='none'">&times;</span>
-                    <h3>Tambah User Baru</h3>
-                    <form action="{{ route('users.store') }}" method="POST">
-                        @csrf
-                        <input type="text" name="username" placeholder="Username" required><br><br>
-                        <input type="email" name="email" placeholder="Email" required><br><br>
-                        <input type="password" name="password" placeholder="Password" required><br><br>
-                        <button type="submit" class="action-btn">Simpan</button>
-                    </form>
+
+            <nav class="w-full">
+                <a href="{{ route('home') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('home') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-home mr-3"></i>Home
+                </a>
+                <a href="{{ route('users') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('users') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-users mr-3"></i>Users
+                </a>
+                <a href="{{ route('crud') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('crud') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-plus-circle mr-3"></i>Create
+                </a>
+                <a href="{{ route('peminjaman') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('peminjaman') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-hand-holding mr-3"></i>Peminjaman
+                </a>
+                <a href="{{ route('pengembalian') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('pengembalian') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-undo-alt mr-3"></i>Pengembalian
+                </a>
+                <a href="{{ route('laporan') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('laporan') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-file-alt mr-3"></i>Laporan
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 p-8">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-user-friends mr-3 text-blue-600"></i>Daftar Pengguna
+                    </h2>
+                    <button onclick="document.getElementById('addUserModal').classList.remove('hidden')"
+                            class="bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Tambah User
+                    </button>
+                </div>
+
+                @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded">
+                    <p>{{ session('success') }}</p>
+                </div>
+                @endif
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-blue-800 text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">No</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nama</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Terdaftar</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+                            @forelse ($users as $i => $user)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $i + 1 }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $user->username }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $user->created_at->format('d M Y') }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500">Belum ada data pengguna</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        @if(session('success'))
-            <div style="margin: 15px 0; background: #d4edda; color: #155724; padding: 10px; border-radius: 8px;">
-                {{ session('success') }}
-            </div>
-        @endif
         </div>
     </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Tambah User Baru</h3>
+                <button onclick="document.getElementById('addUserModal').classList.add('hidden')"
+                        class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form action="{{ route('users.store') }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Username</label>
+                    <input type="text" name="username" placeholder="Username" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Email</label>
+                    <input type="email" name="email" placeholder="Email" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2">Password</label>
+                    <input type="password" name="password" placeholder="Password" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="button" onclick="document.getElementById('addUserModal').classList.add('hidden')"
+                            class="mr-2 px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
-
-        function openModal() {
-            document.getElementById("popupModal").style.display = "flex";
-        }
-
-        function closeModal() {
-            document.getElementById("popupModal").style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            let modal = document.getElementById("popupModal");
-            if (event.target === modal) {
-                modal.style.display = "none";
+        // Close modal when clicking outside
+        document.getElementById('addUserModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
             }
-        }
+        });
     </script>
 </body>
 </html>

@@ -64,5 +64,5 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [MainController::class, 'showLaporan'])->name('laporan');
 
     // Logout
-    Route::delete('/logout', [MainController::class, 'logout'])->name('logout');
+    Route::post('/logout', [MainController::class, 'logout'])->name('logout');
 });

@@ -3,249 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Peminjaman Barang</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #bbddff;
-            margin: 0;
-        }
-
-        .nav {
-            background-color: #002793;
-            padding: 30px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            margin-bottom: 50px;
-        }
-
-        .nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-            margin-left: 1500px;
-            padding: 15px 20px;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 220px;
-            background: #002793;
-            padding-top: 20px;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-        }
-
-        .sidebar a {
-            padding: 15px 20px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            display: block;
-            transition: background 0.3s;
-        }
-
-        .sidebar a:hover {
-            background: #2563eb;
-        }
-
-        .sidebar a.active {
-            background: #3700ff;
-        }
-
-        .logo-container {
-            background: #85a6ff;
-            padding-right: 20px;
-            padding-left: 20px;
-            padding-bottom: 10px;
-            margin: 0 auto;
-            border-radius: 15px;
-            width: 120px;
-            text-align: center;
-        }
-
-        .logo-container img {
-            width: 60px;
-            height: 60px;
-            display: block;
-            margin: 0 auto 8px;
-        }
-
-        .sidebar h1 {
-            color: white;
-            text-align: center;
-            font-size: 20px;
-        }
-
-         .sidebar img {
-            width: 100px;
-            height: auto;
-            margin: 0 auto;
-            display: block;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-            max-width: 1200px;
-        }
-
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            margin-top: 0;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px 15px;
-            text-align: left;
-        }
-
-        th {
-            background: #1e3a8a;
-            color: white;
-        }
-
-        .action-btn {
-            padding: 6px 12px;
-            margin: 2px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .btn-approve {
-            background: #30ff4f;
-            color: white;
-        }
-
-        .btn-reject {
-            background: #dc2626;
-            color: white;
-        }
-
-        button {
-            background: #2563eb;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .success-message {
-            color: green;
-            margin-top: 10px;
-        }
-
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="nav">
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
-        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-    </div>
-
-    <div class="sidebar">
-        <div class="logo-container">
-            <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
-            <h1>SARPRAS</h1>
+<body class="bg-blue-50">
+    <!-- Navbar -->
+    <div class="bg-blue-900 p-4 sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto flex justify-end">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+               class="text-white hover:text-blue-200 font-semibold px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </a>
         </div>
-        <a style="margin-top: 50px;" href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
-        <a href="{{ route('users') }}" class="{{ request()->routeIs('users') ? 'active' : '' }}">Users</a>
-        <a href="{{ route('crud') }}" class="{{ request()->routeIs('crud') ? 'active' : '' }}">Create</a>
-        <a href="{{ route('peminjaman') }}" class="{{ request()->routeIs('peminjaman') ? 'active' : '' }}">Peminjaman</a>
-        <a href="{{ route('pengembalian') }}" class="{{ request()->routeIs('pengembalian') ? 'active' : '' }}">Pengembalian</a>
-        <a href="{{ route('laporan') }}" class="{{ request()->routeIs('laporan') ? 'active' : '' }}">Laporan</a>
     </div>
 
-    <div class="main-content">
-        <div class="card">
-            <h2>Daftar Peminjaman</h2>
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-blue-900 text-white shadow-lg z-40 pt-20">
+        <div class="flex flex-col items-center mb-10 px-4">
+            <div class="bg-blue-400 p-4 rounded-xl w-40 text-center mb-6">
+                <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png"
+                     alt="Logo" class="w-16 h-16 mx-auto mb-2">
+                <h1 class="text-lg font-bold">SARPRAS</h1>
+            </div>
 
-            @if(session('success'))
-                <p class="success-message">{{ session('success') }}</p>
-            @endif
-            @if(session('error'))
-                <p class="error-message">{{ session('error') }}</p>
-            @endif
+            <nav class="w-full">
+                <a href="{{ route('home') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('home') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-home mr-3"></i>Home
+                </a>
+                <a href="{{ route('users') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('users') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-users mr-3"></i>Users
+                </a>
+                <a href="{{ route('crud') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('crud') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-plus-circle mr-3"></i>Create
+                </a>
+                <a href="{{ route('peminjaman') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('peminjaman') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-hand-holding mr-3"></i>Peminjaman
+                </a>
+                <a href="{{ route('pengembalian') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('pengembalian') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-undo-alt mr-3"></i>Pengembalian
+                </a>
+                <a href="{{ route('laporan') }}"
+                   class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('laporan') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
+                    <i class="fas fa-file-alt mr-3"></i>Laporan
+                </a>
+            </nav>
+        </div>
+    </div>
 
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Peminjam</th>
-                            <th>Barang</th>
-                            <th>Jumlah</th>
-                            <th>Tanggal Pinjam</th>
-                            <th>Status Peminjaman</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($peminjaman as $i => $pinjam)
+    <!-- Main Content -->
+    <div class="ml-64 p-8">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-hand-holding mr-3 text-blue-600"></i>Daftar Peminjaman
+                </h2>
+
+                @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded">
+                    {{ session('success') }}
+                </div>
+                @endif
+
+                @if(session('error'))
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
+                    {{ session('error') }}
+                </div>
+                @endif
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-blue-800 text-white">
                             <tr>
-                                <td>{{ $i + 1 }}</td>
-                                <td>{{ $pinjam->user->username }}</td>
-                                <td>{{ $pinjam->items->name }}</td>
-                                <td>{{ $pinjam->jumlah_pinjam }}</td>
-                                <td>{{ \Carbon\Carbon::parse($pinjam->tanggal_pinjam)->format('d-m-Y') }}</td>
-                                <td>{{ ucfirst($pinjam->status) }}</td>
-                                <td>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">No</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Peminjam</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Barang</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Jumlah</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Tanggal Pinjam</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+                            @forelse($peminjaman as $i => $pinjam)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $i + 1 }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $pinjam->user->username }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $pinjam->items->name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $pinjam->jumlah_pinjam }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($pinjam->tanggal_pinjam)->format('d-m-Y') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap capitalize">{{ $pinjam->status }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     @if($pinjam->status === 'menunggu')
-                                        <form method="POST" action="{{ route('peminjaman.approve', $pinjam->id) }}" style="display:inline">
+                                    <div class="flex space-x-2">
+                                        <form method="POST" action="{{ route('peminjaman.approve', $pinjam->id) }}">
                                             @csrf
-                                            <button class="action-btn btn-approve" type="submit">Setujui</button>
+                                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm flex items-center">
+                                                <i class="fas fa-check mr-1"></i> Setujui
+                                            </button>
                                         </form>
-                                        <form method="POST" action="{{ route('peminjaman.reject', $pinjam->id) }}" style="display:inline">
+                                        <form method="POST" action="{{ route('peminjaman.reject', $pinjam->id) }}">
                                             @csrf
-                                            <button class="action-btn btn-reject" type="submit">Tolak</button>
+                                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-sm flex items-center">
+                                                <i class="fas fa-times mr-1"></i> Tolak
+                                            </button>
                                         </form>
+                                    </div>
                                     @else
-                                        <p style="opacity: 0.5; font-size: 12px;">
-                                            Diproses
-                                        </p>
+                                    <span class="text-gray-400 text-sm">Diproses</span>
                                     @endif
                                 </td>
                             </tr>
-                        @empty
+                            @empty
                             <tr>
-                                <td colspan="7">Belum ada data peminjaman.</td>
+                                <td colspan="7" class="px-6 py-4 text-center text-gray-500">Belum ada data peminjaman</td>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

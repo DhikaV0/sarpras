@@ -2,185 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #bbddff;
-            color: white;
-        }
-
-        .nav {
-            background-color: #002793;
-            padding: 30px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            margin-bottom: 50px;
-        }
-
-        .nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-            margin-left: 1500px;
-            padding: 15px 20px;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 220px;
-            background: #002793;
-            padding-top: 20px;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-        }
-
-        .sidebar a {
-            padding: 15px 20px;
-            text-decoration: none;
-            color: white;
-            font-weight: bold;
-            display: block;
-            transition: background 0.3s;
-        }
-
-        .sidebar a:hover {
-            background: #2563eb;
-        }
-
-        .sidebar a.active {
-            background: #3700ff;
-            font-weight: bold;
-        }
-
-        .logo-container {
-            background: #85a6ff;
-            padding-right: 20px;
-            padding-left: 20px;
-            padding-bottom: 10px;
-            margin: 0 auto;
-            border-radius: 15px;
-            width: 120px;
-            text-align: center;
-        }
-
-        .logo-container img {
-            width: 60px;
-            height: 60px;
-            display: block;
-            margin: 0 auto 8px;
-        }
-        .sidebar h1 {
-            color: white;
-            text-align: center;
-            font-size: 20px;
-        }
-
-        .sidebar img {
-            width: 100px;
-            height: auto;
-            margin: 0 auto;
-            display: block;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-            max-width: 1200px;
-        }
-
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .card h2 {
-            margin: 10px;
-            color: black;
-        }
-
-        .sidebar h2 {
-            margin-top: 0;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px 15px;
-            text-align: left;
-        }
-
-        tbody {
-            color: black
-        }
-
-        th {
-            background: #1e3a8a;
-            color: white;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="nav">
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
-        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-    </div>
-
-    <div class="sidebar">
-        <div class="logo-container">
-            <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="">
-            <h1>SARPRAS</h1>
+<body class="bg-blue-50">
+    <!-- Navbar -->
+    <div class="bg-blue-900 p-4 sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto flex justify-end">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+               class="text-white hover:text-blue-200 font-semibold px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </a>
         </div>
     </div>
 
-    <div class="main-content">
-        <div class="card">
-            <h2>Daftar Barang</h2>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr><th>No</th><th>Nama</th><th>Stok</th><th>Kategori</th></tr>
-                    </thead>
-                    <tbody>
-                        @forelse($items as $i => $it)
+    <!-- Sidebar -->
+    <div class="fixed left-0 top-0 h-full w-64 bg-blue-900 text-white shadow-lg z-40 pt-20">
+        <div class="flex flex-col items-center mb-10 px-4">
+            <div class="bg-blue-400 p-4 rounded-xl w-40 text-center mb-6">
+                <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png"
+                     alt="Logo" class="w-16 h-16 mx-auto mb-2">
+                <h1 class="text-lg font-bold">SARPRAS</h1>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 p-8">
+        <!-- Items Card -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-boxes mr-3 text-blue-600"></i>Daftar Barang
+                </h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-blue-800 text-white">
                             <tr>
-                                <td>{{ $i+1 }}</td>
-                                <td>{{ $it->name }}</td>
-                                <td>{{ $it->stok }}</td>
-                                <td>{{ $it->category->name ?? '-' }}</td>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">No</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nama Barang</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Stok</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Gambar</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Kategori</th>
                             </tr>
-                        @empty
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+                            @forelse($items as $i => $it)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $i+1 }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $it->name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $it->stok }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($it->foto)
+                                    <img src="{{ asset('storage/' . $it->foto) }}" alt="{{ $it->name }}" class="h-12 w-12 object-cover rounded">
+                                    @else
+                                    <span class="text-gray-400">Tidak ada gambar</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $it->category->name }}</td>
+                            </tr>
+                            @empty
                             <tr>
-                                <td colspan="4">Belum ada data barang</td>
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">Tidak ada barang</td>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
     </div>
 </body>
 </html>
