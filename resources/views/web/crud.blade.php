@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>CRUD with Modal</title>
+  <title>Create</title>
   <style>
     body {
         font-family: Arial, sans-serif;
@@ -297,7 +297,7 @@
         <div class="table-wrap">
             <table>
                 <thead>
-                    <tr><th>No</th><th>Nama</th><th>Stok</th><th>Gambar</th><th>Kategori</th><th>Aksi</th></tr>
+                    <tr><th>No</th><th>Nama Barang</th><th>Stok</th><th>Gambar</th><th>Kategori</th><th>Aksi</th></tr>
                 </thead>
                 <tbody>
                     @forelse($items as $i => $it)

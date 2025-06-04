@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>Report</title>
     <style>
         body {
             margin: 0;
@@ -166,6 +166,40 @@
         <div class="card">
             <h2>Laporan Peminjaman & Pengembalian</h2>
 
+            <hr>
+
+            <h3 style="color: black">Data Barang</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Barang</th>
+                        <th>Foto</th>
+                        <th>Jumlah Tersedia</th>
+                        <th>Jumlah Dipinjam</th>
+                        <th>Total Barang</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($items as $i => $it)
+                    <tr>
+                        <td>{{ $i + 1 }}</td>
+                        <td>{{ $it->name }}</td>
+                        <td>
+                            @if($it->foto)
+                                <img src="{{ asset('storage/' . $it->foto) }}" alt="{{ $it->name }}" class="item-image" style="width: 50px;">
+                            @else
+                                Tidak ada gambar
+                            @endif
+                        </td>
+                        <td>{{ $it->stok ?? 0 }}</td>
+                        <td>{{ $it->jumlah_dipinjam ?? 0 }}</td>
+                        <td>{{ ($it->jumlah_tersedia ?? 0) + ($it->jumlah_dipinjam ?? 0) }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <h4 style="color: black">Total Barang: {{ $totalItems }}</h4>
 
             <hr>
 
@@ -174,7 +208,7 @@
                     <thead>
                         <tr>
                             <th>Nama Peminjam</th>
-                            <th>Item</th>
+                            <th>Barang</th>
                             <th>Jumlah</th>
                             <th>Status</th>
                             <th>Tanggal</th>
@@ -201,7 +235,7 @@
                 <thead>
                     <tr>
                         <th>Nama Peminjam</th>
-                        <th>Item</th>
+                        <th>Barang</th>
                         <th>Jumlah</th>
                         <th>Status Pengembalian</th>
                         <th>Tanggal Disetujui</th>
@@ -220,7 +254,6 @@
             </tbody>
             </table>
             <h4 style="color: black">Total Pengembalian: {{ $totalPengembalian }}</h4>
-
         </div>
     </div>
 </body>

@@ -224,11 +224,14 @@
                             <th>Peminjam</th>
                             <th>Barang</th>
                             <th>Jumlah Pinjam</th>
-                            <th>Tanggal Pinjam</th> <th>Tanggal Pengajuan Kembali</th>
+                            <th>Tanggal Pinjam</th>
+                            <th>Tanggal Pengajuan Kembali</th>
                             <th>Deskripsi Pengembalian</th>
                             <th>Foto Pengembalian</th>
-                            <th>Status Pengajuan</th> <th>Disetujui Oleh</th>
-                            <th>Tanggal Disetujui</th> <th>Aksi</th>
+                            <th>Status Pengajuan</th>
+                            <th>Disetujui Oleh</th>
+                            <th>Tanggal Disetujui</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>

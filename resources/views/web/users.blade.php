@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Page</title>
+    <title>Pengguna</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -215,7 +215,7 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Username</th>
+                            <th>Nama</th>
                             <th>Email</th>
                             <th>Terdaftar</th>
                         </tr>

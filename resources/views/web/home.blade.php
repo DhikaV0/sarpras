@@ -176,7 +176,7 @@
         <div class="table-wrap">
             <table>
                 <thead>
-                    <tr><th>No</th><th>Nama</th><th>Stok</th><th>Gambar</th><th>Kategori</th></tr>
+                    <tr><th>No</th><th>Nama Barang</th><th>Stok</th><th>Gambar</th><th>Kategori</th></tr>
                 </thead>
                 <tbody>
                     @forelse($items as $i => $it)
@@ -208,7 +208,7 @@
             <div class="table-wrap">
                 <table>
                     <thead>
-                        <tr><th>No</th><th>Username</th><th>Email</th><th>Terdaftar</th></tr>
+                        <tr><th>No</th><th>Nama</th><th>Email</th><th>Terdaftar</th></tr>
                     </thead>
                     <tbody>
                         @forelse ($users as $i => $user)

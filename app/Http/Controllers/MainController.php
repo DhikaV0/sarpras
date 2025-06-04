@@ -344,6 +344,11 @@ class MainController extends Controller
         $totalPeminjaman = $semuaPeminjaman->count();
         $totalPengembalian = $semuaPengembalian->count();
 
+        $items = Item::select('id', 'name', 'stok', 'category_id', 'foto')->with('category')->get();
+        $totalItems = $items->count();
+
+        return view('web.laporan', compact('semuaPeminjaman', 'semuaPengembalian', 'totalPeminjaman', 'totalPengembalian', 'items', 'totalItems'));
+
         return view('web.laporan', compact('semuaPeminjaman', 'semuaPengembalian', 'totalPeminjaman', 'totalPengembalian'));
     }
 }
