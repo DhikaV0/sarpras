@@ -3,130 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom right, #003477, #0065fd);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .img-header {
-            position: absolute;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
-        }
-
-        .container {
-            background-color: #1e3a8a;
-            padding: 50px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            color: white;
-            width: 400px;
-        }
-
-        .container h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .form-group input {
-            width: 82%;
-            padding: 10px 35px 10px 35px;
-            border: none;
-            border-radius: 5px;
-            background-color: #ffffff;
-            color: rgb(13, 0, 0);
-        }
-
-        .error-message {
-            color: red;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .checkbox {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .underform-text {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .form-group .icon {
-            position: absolute;
-            left: 10px;
-            top: 10px;
-            width: 16px;
-            height: 16px;
-        }
-
-        .container button {
-            width: 100%;
-            background-color: #3b82f6;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .container button:hover {
-            background-color: #2563eb;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <img src="https://smktarunabhakti.net/wp-content/uploads/2020/07/logotbvector-copy.png" alt="" class="img-header">
-    <div class="container">
-        <h2>LOGIN</h2>
+<body class="font-sans h-screen flex justify-center items-center bg-gradient-to-br from-blue-900 to-blue-500">
+    <div class="bg-blue-900 p-12 rounded-xl shadow-lg text-white w-full max-w-md">
+        <h2 class="text-3xl font-bold text-center mb-8">LOGIN</h2>
         <form method="POST" action="{{ route('login') }}">
             @csrf
-            <div class="form-group">
-                <input type="text" name="username" placeholder="Username" required>
+            <div class="mb-5 relative">
+                <input type="text" name="username" placeholder="Username" required
+                       class="w-full pl-10 pr-4 py-3 border-none rounded-md bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
             </div>
 
-            <div class="form-group">
-                <input type="password" name="password" placeholder="Password" required>
+            <div class="mb-5 relative">
+                <input type="password" name="password" placeholder="Password" required
+                       class="w-full pl-10 pr-4 py-3 border-none rounded-md bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 @error('login')
-                    <div style="color: red; font-size: 14px; margin-top: 5px;">
+                    <div class="text-red-400 text-sm mt-2">
                         {{ $message }}
                     </div>
                 @enderror
             </div>
 
-            <div class="checkbox">
-                <label style="font-size: 14px;">
-                    <input type="checkbox" name="remember">
-                    Remember Me
+            <div class="flex items-center mb-5">
+                <label class="text-sm cursor-pointer">
+                    <input type="checkbox" name="remember" class="mr-2 rounded text-blue-600 focus:ring-blue-500">
+                    Ingat saya
                 </label>
             </div>
 
-            <div class="underform-text">
-                <p>Don't have an account? <a href="{{ route('register') }}" style="color: rgb(95, 95, 255);">Register</a></p>
-            </div>
+            <p class="text-center text-sm mb-5">
+                Belum punya akun? <a href="{{ route('register') }}" class="text-blue-400 hover:underline font-semibold">Register</a>
+            </p>
 
-            <button type="submit">LOGIN</button>
+            <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 transition-colors duration-300 border-none py-3 rounded-md text-white font-bold cursor-pointer text-lg">
+                LOGIN
+            </button>
         </form>
     </div>
 </body>
 </html>
-

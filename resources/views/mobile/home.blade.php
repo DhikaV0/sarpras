@@ -8,7 +8,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-blue-50">
-    <!-- Navbar -->
     <div class="bg-blue-900 p-4 sticky top-0 z-50 shadow-md">
         <div class="container mx-auto flex justify-end">
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
@@ -21,7 +20,6 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div class="fixed left-0 top-0 h-full w-64 bg-blue-900 text-white shadow-lg z-40 pt-20">
         <div class="flex flex-col items-center mb-10 px-4">
             <div class="bg-blue-400 p-4 rounded-xl w-40 text-center mb-6">
@@ -33,9 +31,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="ml-64 p-8">
-        <!-- Items Card -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
             <div class="p-6">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">

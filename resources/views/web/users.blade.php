@@ -41,7 +41,7 @@
                 </a>
                 <a href="{{ route('crud') }}"
                    class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('crud') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
-                    <i class="fas fa-plus-circle mr-3"></i>Create
+                    <i class="fas fa-plus-circle mr-3"></i>Tambah
                 </a>
                 <a href="{{ route('peminjaman') }}"
                    class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('peminjaman') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
