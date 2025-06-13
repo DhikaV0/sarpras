@@ -37,11 +37,11 @@
                 </a>
                 <a href="{{ route('users') }}"
                    class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('users') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
-                    <i class="fas fa-users mr-3"></i>Users
+                    <i class="fas fa-users mr-3"></i>Daftar Pengguna
                 </a>
                 <a href="{{ route('crud') }}"
                    class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('crud') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
-                    <i class="fas fa-plus-circle mr-3"></i>Tanbah
+                    <i class="fas fa-plus-circle mr-3"></i>Tambah
                 </a>
                 <a href="{{ route('peminjaman') }}"
                    class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('peminjaman') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">

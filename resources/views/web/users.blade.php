@@ -37,7 +37,7 @@
                 </a>
                 <a href="{{ route('users') }}"
                    class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('users') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
-                    <i class="fas fa-users mr-3"></i>Users
+                    <i class="fas fa-users mr-3"></i>Daftar Pengguna
                 </a>
                 <a href="{{ route('crud') }}"
                    class="block px-6 py-3 rounded-lg mb-2 transition-colors {{ request()->routeIs('crud') ? 'bg-blue-700 font-bold' : 'hover:bg-blue-800' }}">
@@ -86,6 +86,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">No</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nama</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Role</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Terdaftar</th>
                             </tr>
                         </thead>
@@ -95,6 +96,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $i + 1 }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $user->username }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $user->role }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $user->created_at->format('d M Y') }}</td>
                             </tr>
                             @empty
