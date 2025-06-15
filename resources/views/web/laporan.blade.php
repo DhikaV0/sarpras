@@ -6,9 +6,9 @@
     <title>Laporan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
 </head>
 <body class="bg-blue-50">
-    <!-- Navbar -->
     <div class="bg-blue-900 p-4 sticky top-0 z-50 shadow-md">
         <div class="container mx-auto flex justify-end">
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
@@ -21,7 +21,6 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div class="fixed left-0 top-0 h-full w-64 bg-blue-900 text-white shadow-lg z-40 pt-20">
         <div class="flex flex-col items-center mb-10 px-4">
             <div class="bg-blue-400 p-4 rounded-xl w-40 text-center mb-6">
@@ -59,7 +58,6 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="ml-64 p-8">
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
             <div class="p-6">
@@ -67,13 +65,23 @@
                     <i class="fas fa-file-alt mr-3 text-blue-600"></i>Laporan Peminjaman & Pengembalian
                 </h2>
 
-                <!-- Data Barang Section -->
+                <div class="flex gap-4 mb-6">
+                    <a href="{{ route('laporan.pdf') }}" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300">
+                        <i class="fas fa-file-pdf mr-2"></i>Download PDF
+                    </a>
+                    <button onclick="downloadExcel()" class="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors duration-300">
+                        <i class="fas fa-file-excel mr-2"></i>Download Excel
+                    </button>
+                </div>
+
+                <hr class="my-6 border-gray-200">
+
                 <div class="mb-10">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <i class="fas fa-boxes mr-2"></i>Data Barang
                     </h3>
                     <div class="overflow-x-auto mb-4">
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table id="tabel-barang" class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-blue-800 text-white">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">No</th>
@@ -109,13 +117,12 @@
 
                 <hr class="my-6 border-gray-200">
 
-                <!-- Data Peminjaman Section -->
                 <div class="mb-10">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <i class="fas fa-hand-holding mr-2"></i>Data Peminjaman
                     </h3>
                     <div class="overflow-x-auto mb-4">
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table id="tabel-peminjaman" class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-blue-800 text-white">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nama Peminjam</th>
@@ -143,13 +150,12 @@
 
                 <hr class="my-6 border-gray-200">
 
-                <!-- Data Pengembalian Section -->
                 <div>
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <i class="fas fa-undo-alt mr-2"></i>Data Pengembalian
                     </h3>
                     <div class="overflow-x-auto mb-4">
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table id="tabel-pengembalian" class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-blue-800 text-white">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Nama Peminjam</th>
@@ -181,3 +187,165 @@
     </div>
 </body>
 </html>
+
+<script>
+    function downloadExcel() {
+        const wb = XLSX.utils.book_new();
+        const now = new Date();
+        const dateString = now.toISOString().split('T')[0];
+        const filename = `Laporan_SARPRAS_${dateString}.xlsx`;
+
+        // --- Data Barang ---
+        const excelDataBarang = [
+            ['No', 'Nama Barang', 'Jumlah Tersedia', 'Jumlah Dipinjam', 'Total Barang']
+        ];
+        const rowsBarang = document.querySelectorAll('#tabel-barang tbody tr');
+        rowsBarang.forEach((row, index) => {
+            // Skip rows with colspan (e.g., "Tidak ada data")
+            if(row.querySelector('td[colspan]')) return;
+            const cells = row.querySelectorAll('td');
+            // Assuming the order of cells matches the headers
+            const no = cells[0].textContent.trim();
+            const namaBarang = cells[1].textContent.trim();
+            const jumlahTersedia = cells[3].textContent.trim(); // Index 3 for Jumlah Tersedia
+            const jumlahDipinjam = cells[4].textContent.trim(); // Index 4 for Jumlah Dipinjam
+            const totalBarang = cells[5].textContent.trim();   // Index 5 for Total Barang
+
+            excelDataBarang.push([
+                parseInt(no),
+                namaBarang,
+                parseInt(jumlahTersedia),
+                parseInt(jumlahDipinjam),
+                parseInt(totalBarang)
+            ]);
+        });
+        const wsBarang = XLSX.utils.aoa_to_sheet(excelDataBarang);
+        applyHeaderStyleAndWidth(wsBarang);
+        XLSX.utils.book_append_sheet(wb, wsBarang, 'Data Barang');
+
+        // --- Data Peminjaman ---
+        const excelDataPeminjaman = [
+            ['Nama Peminjam', 'Barang', 'Jumlah', 'Status', 'Tanggal']
+        ];
+        const rowsPeminjaman = document.querySelectorAll('#tabel-peminjaman tbody tr');
+        rowsPeminjaman.forEach((row) => {
+            if(row.querySelector('td[colspan]')) return;
+            const cells = row.querySelectorAll('td');
+            excelDataPeminjaman.push([
+                cells[0].textContent.trim(), // Nama Peminjam
+                cells[1].textContent.trim(), // Barang
+                parseInt(cells[2].textContent.trim()), // Jumlah
+                cells[3].textContent.trim(), // Status
+                cells[4].textContent.trim()  // Tanggal
+            ]);
+        });
+        const wsPeminjaman = XLSX.utils.aoa_to_sheet(excelDataPeminjaman);
+        applyHeaderStyleAndWidth(wsPeminjaman);
+        XLSX.utils.book_append_sheet(wb, wsPeminjaman, 'Data Peminjaman');
+
+        // --- Data Pengembalian ---
+        const excelDataPengembalian = [
+            ['Nama Peminjam', 'Barang', 'Jumlah', 'Status', 'Tanggal Disetujui']
+        ];
+        const rowsPengembalian = document.querySelectorAll('#tabel-pengembalian tbody tr');
+        rowsPengembalian.forEach((row) => {
+            if(row.querySelector('td[colspan]')) return;
+            const cells = row.querySelectorAll('td');
+            excelDataPengembalian.push([
+                cells[0].textContent.trim(), // Nama Peminjam
+                cells[1].textContent.trim(), // Barang
+                parseInt(cells[2].textContent.trim()), // Jumlah
+                cells[3].textContent.trim(), // Status
+                cells[4].textContent.trim()  // Tanggal Disetujui
+            ]);
+        });
+        const wsPengembalian = XLSX.utils.aoa_to_sheet(excelDataPengembalian);
+        applyHeaderStyleAndWidth(wsPengembalian);
+        XLSX.utils.book_append_sheet(wb, wsPengembalian, 'Data Pengembalian');
+
+        XLSX.writeFile(wb, filename);
+
+        showNotification(`File ${filename} berhasil diunduh!`, 'success');
+    }
+
+    // Helper function to apply styles and column widths
+    function applyHeaderStyleAndWidth(ws) {
+        if (!ws['!ref']) return;
+        const range = XLSX.utils.decode_range(ws['!ref']);
+        for (let col = range.s.c; col <= range.e.c; col++) {
+            const headerCell = ws[XLSX.utils.encode_cell({r: 0, c: col})];
+            if (headerCell) {
+                headerCell.s = {
+                    font: { bold: true, color: { rgb: "FFFFFF" } },
+                    fill: { fgColor: { rgb: "0B74DE" } }, // Dark blue header
+                    alignment: { horizontal: "center", vertical: "center" },
+                    border: {
+                        top: { style: "thin", color: { rgb: "000000" } },
+                        bottom: { style: "thin", color: { rgb: "000000" } },
+                        left: { style: "thin", color: { rgb: "000000" } },
+                        right: { style: "thin", color: { rgb: "000000" } }
+                    }
+                };
+            }
+        }
+
+        const colWidths = [];
+        for (let col = range.s.c; col <= range.e.c; col++) {
+            let maxWidth = 10;
+            for (let row = range.s.r; row <= range.e.r; row++) {
+                const cell = ws[XLSX.utils.encode_cell({r: row, c: col})];
+                if (cell && cell.v) {
+                    const cellWidth = cell.v.toString().length;
+                    if (cellWidth > maxWidth) maxWidth = cellWidth;
+                }
+            }
+            colWidths.push({wch: Math.min(maxWidth + 3, 50)}); // Limit max width to 50 for readability
+        }
+        ws['!cols'] = colWidths;
+    }
+
+
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 transform translate-x-full max-w-sm`;
+
+        if (type === 'success') {
+            notification.className += ' bg-green-500 text-white';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-3 text-xl"></i>
+                    <div>
+                        <p class="font-semibold">Berhasil!</p>
+                        <p class="text-sm">${message}</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            notification.className += ' bg-blue-500 text-white';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-info-circle mr-3 text-xl"></i>
+                    <div>
+                        <p class="font-semibold">Info</p>
+                        <p class="text-sm">${message}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }, 4000);
+    }
+</script>

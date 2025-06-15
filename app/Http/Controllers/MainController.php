@@ -13,6 +13,7 @@ use App\Models\Item;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MainController extends Controller
 {
@@ -350,5 +351,26 @@ class MainController extends Controller
         return view('web.laporan', compact('semuaPeminjaman', 'semuaPengembalian', 'totalPeminjaman', 'totalPengembalian', 'items', 'totalItems'));
 
         return view('web.laporan', compact('semuaPeminjaman', 'semuaPengembalian', 'totalPeminjaman', 'totalPengembalian'));
+    }
+
+    public function downloadLaporanPDF()
+    {
+        $semuaPeminjaman = Peminjaman::with(['user', 'items'])->latest()->get();
+        $semuaPengembalian = Pengembalian::with(['peminjaman.user', 'peminjaman.items', 'returnedBy'])->latest()->get();
+        $items = Item::select('id', 'name', 'stok', 'category_id', 'foto')->with('category')->get();
+        $totalItems = $items->count();
+        $totalPeminjaman = $semuaPeminjaman->count();
+        $totalPengembalian = $semuaPengembalian->count();
+
+        $pdf = Pdf::loadView('web.laporan_pdf', compact(
+            'semuaPeminjaman',
+            'semuaPengembalian',
+            'items',
+            'totalItems',
+            'totalPeminjaman',
+            'totalPengembalian'
+        ));
+
+        return $pdf->download('laporan_sarpras.pdf');
     }
 }

@@ -65,7 +65,16 @@ class MainApiController extends Controller
     // ITEM API
     public function getItems()
     {
-        $items = Item::with('category')->get();
+        $items = Item::with('category')->get()->map(function ($item) {
+            return [
+            'id' => $item->id,
+            'name' => $item->name,
+            'stok' => $item->stok,
+            'category_id' => $item->category->name ?? '-',
+            'foto' => $item->foto,
+        ];
+    });
+
         return response()->json($items);
     }
 
@@ -80,7 +89,7 @@ class MainApiController extends Controller
         $request->validate([
             'items_id' => 'required|exists:items,id',
             'jumlah_pinjam' => 'required|integer|min:1',
-            'tanggal_pinjam' => 'required|date_format:Y-m-d', // Pastikan format YYYY-MM-DD
+            'tanggal_pinjam' => 'required|date_format:Y-m-d',
         ]);
 
         $peminjaman = Peminjaman::create([

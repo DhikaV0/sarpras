@@ -62,6 +62,7 @@ Route::middleware('auth')->group(function () {
 
     // Laporan
     Route::get('/laporan', [MainController::class, 'showLaporan'])->name('laporan');
+    Route::get('/laporan/pdf', [MainController::class, 'downloadLaporanPDF'])->name('laporan.pdf');
 
     // Logout
     Route::post('/logout', [MainController::class, 'logout'])->name('logout');
