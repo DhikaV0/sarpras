@@ -258,8 +258,6 @@ class MainController extends Controller
             $peminjaman->status = 'dipinjam';
             $peminjaman->save();
 
-            $item->stok -= $peminjaman->jumlah_pinjam;
-            $item->save();
         });
 
         return back()->with('success', 'Peminjaman berhasil disetujui.');
@@ -303,8 +301,6 @@ class MainController extends Controller
 
         DB::transaction(function () use ($pengajuan, $peminjaman) {
             $item = $peminjaman->items;
-            $item->stok += $peminjaman->jumlah_pinjam;
-            $item->save();
 
             $peminjaman->status = 'dikembalikan';
             $peminjaman->save();

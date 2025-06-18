@@ -78,6 +78,29 @@ class MainApiController extends Controller
         return response()->json($items);
     }
 
+    // PROFILE API
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user || !($user instanceof \App\Models\User)) {
+            return response()->json(['message' => 'User not authenticated or not found'], 401);
+        }
+
+        $request->validate([
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:5|confirmed',
+        ]);
+
+        $user->email = $request->email;
+        if ($request->password) {
+            $user->password = bcrypt($request->password);
+        }
+        $user->save();
+
+        return response()->json(['message' => 'Profile updated', 'user' => $user]);
+    }
+
     // PEMINJAMAN API
     public function store(Request $request)
     {
